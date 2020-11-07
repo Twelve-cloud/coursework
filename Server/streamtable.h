@@ -69,9 +69,6 @@ public:
         return colWidth_.back();
     }
 
-    void SetVisible(int col, bool flg) {
-        visible_[col - 1] = flg;
-    }
 
     void SetCols(int colCount, int colWidth = 0) {
         Clear();

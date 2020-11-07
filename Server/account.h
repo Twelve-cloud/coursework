@@ -38,6 +38,8 @@ public:
     ~AccountBase();
 
     void add(Account* object);
+    void filltration(const std::string& login);
+    void sort();
     Node* find(std::string login, int);
     Node* find(uint32_t index);
     bool find(std::string login);

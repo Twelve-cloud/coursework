@@ -1,5 +1,8 @@
 #include "server.h"
 #include "constants.inc"
+#include "streamtable.h"
+#include <windows.h>
+#include <cstring>
 #include <iostream>
 
 MyServer::MyServer(const std::string& filename, const QString& hostname, uint32_t port, QWidget* parent)
@@ -11,7 +14,7 @@ MyServer::MyServer(const std::string& filename, const QString& hostname, uint32_
         m_tcpServer->close();
         qFatal("Server can't listeting.");
     } else {
-        std::cout << "Server listening." << std::endl << std::endl;
+        std::cout << "Server listening." << std::endl << std::endl; system("pause");
     }
 
     connect(m_tcpServer, SIGNAL(newConnection()), this, SLOT(slotNewConnection()));
@@ -106,18 +109,49 @@ void MyServer::sendToClient(QTcpSocket* pSocket, const qint16 res) {
 }
 
 void MyServer::writeFile(const std::string& login, const std::string& password) {
+    StreamTable st(file);
+    st.AddCol(20);
+    st.AddCol(20);
+    st.MakeBorderExt(true);
+    st.SetDelimRow(true, '-');
+    st.SetDelimCol(true, '|');
+
     file.open(m_filename, std::ios_base::app);
-    file << login << std::endl << password << std::endl;
+    st << login << password;
     file.close();
 }
 
 void MyServer::readFile() {
     std::string login, password;
+    char buf[44], log[22], pass[22];
+
+    StreamTable st(file);
+    st.AddCol(20);
+    st.AddCol(20);
+    st.MakeBorderExt(true);
+    st.SetDelimRow(true, '-');
+    st.SetDelimCol(true, '|');
 
     file.open(m_filename, std::ios_base::in);
     while (!file.eof())
     {
-        file >> login >> password;
+        login.clear();
+        password.clear();
+        file.read(buf, 44);
+        std::strcpy(log, "");
+        file.read(log, 22);
+        for (size_t i = 0; i < std::strlen(log); i++) {
+            if (log[i] != ' ' && log[i] != '|' && log[i] != '\n') {
+                login += log[i];
+            }
+        }
+        std::strcpy(pass, "");
+        file.read(pass, 22);
+        for (size_t i = 0; i < std::strlen(pass); i++) {
+            if (pass[i] != ' ' && pass[i] != '|' && pass[i] != '\n') {
+                password += pass[i];
+            }
+        }
         if (file.eof()) break;
         DATABASE.add(new Account(login, password));
     }
@@ -126,10 +160,17 @@ void MyServer::readFile() {
 
 void MyServer::rewriteBD()
 {
+    StreamTable st(file);
+    st.AddCol(20);
+    st.AddCol(20);
+    st.MakeBorderExt(true);
+    st.SetDelimRow(true, '-');
+    st.SetDelimCol(true, '|');
+
     file.open(m_filename, std::ios_base::out);
     for (std::int32_t i = DATABASE.length() - 1; i >= 0; i--)
     {
-        file << DATABASE[i] -> m_object -> getLogin() << std::endl << DATABASE[i] -> m_object -> getPassword() << std::endl;
+        st << DATABASE[i] -> m_object -> getLogin() << DATABASE[i] -> m_object -> getPassword();
     }
     file.close();
 }

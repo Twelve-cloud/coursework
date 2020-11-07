@@ -1,7 +1,9 @@
 #include "account.h"
+#include "streamtable.h"
+#include <conio.h>
+#include <windows.h>
 #include <iostream>
 #include <sstream>
-#include "streamtable.h"
 
 // Реализация Account ниже
 
@@ -13,7 +15,7 @@ std::ostream& operator<<(std::ostream& out, const Account& object) {
 }
 std::istream& operator>>(std::istream& in, Account& object) {
     std::cout << "Enter login: ";    std::cin >> object.m_login;
-    std::cout << "Enter passwotd: "; std::cin >> object.m_password;
+    std::cout << "Enter password: "; std::cin >> object.m_password;
 
     return in;
 }
@@ -43,6 +45,33 @@ void AccountBase::add(Account* object) {
         pend = new_account;
     }
     ++m_length;
+}
+
+void AccountBase::filltration(const std::string &login) {
+    system("cls");
+    StreamTable st(std::cout);
+    st.AddCol(20);
+    st.AddCol(20);
+    st.MakeBorderExt(true);
+    st.SetDelimRow(true, '-');
+    st.SetDelimCol(true, '|');
+
+    std::cout << "Enter login: ";
+    for (char a : login) {
+        putchar(a);
+    }
+
+    Node *target = pbeg;
+    while (target != nullptr) {
+        if (!target -> m_object -> getLogin().compare(0, login.size(), login)) {
+            st << target -> m_object -> getLogin() << target -> m_object -> getPassword();
+        }
+       target = target -> next;
+    }
+}
+
+void AccountBase::sort() {
+
 }
 
 bool AccountBase::find(std::string login) {
@@ -117,8 +146,13 @@ bool AccountBase::remove(std::string login) {
 
 std::ostream& operator<<(std::ostream& out, const AccountBase::Node* object)
 {
+    StreamTable st(std::cout);
+    st.SetCols(2, 30);
+    st.MakeBorderExt(true);
+    st.SetDelimRow(true, '-');
+    st.SetDelimCol(true, '|');
 
-    std::cout << object -> m_object -> getLogin() << object -> m_object -> getPassword();
+    st << object -> m_object -> getLogin() << object -> m_object -> getPassword();
 
     return out;
 }
@@ -126,18 +160,11 @@ std::ostream& operator<<(std::ostream& out, const AccountBase::Node* object)
 std::ostream& operator<<(std::ostream& out, const AccountBase& object)
 {
     StreamTable st(std::cout);
-    st.AddCol(30);
-    st.AddCol(30);
-
-
-    st.Clear();
     st.SetCols(2, 30);
-
-//    st.SetVisible(1, false);
-
     st.MakeBorderExt(true);
-    st.SetDelimRow(true, '-');//st.SetDelimRow(false);//без символов-разделителей строк
-    st.SetDelimCol(true, '|');//st.SetDelimCol(false);//без символов-разделителей строк
+    st.SetDelimRow(true, '-');
+    st.SetDelimCol(true, '|');
+
     st << "Login" << "Password";
 
     AccountBase::Node* tmp = object.pbeg;

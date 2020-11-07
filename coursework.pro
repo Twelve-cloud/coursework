@@ -10,8 +10,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = coursework
 TEMPLATE = app
-DESTDIR = C:\\coursework
-win32: RC_ICONS += C:\\coursework\\appicon\\Icon.ico
+DESTDIR = D:\\Qt\\Projects\\coursework
+win32: RC_ICONS += D:\\Qt\\Projects\\coursework\\appicon\\Icon.ico
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings

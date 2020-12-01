@@ -6,18 +6,18 @@
 #include <QThread>
 #include <string>
 
-class MyThread : public QThread {
+class MyThread : public QThread
+{
      Q_OBJECT
 public:
-    MyThread(MyServer* tcp_server, std::string& filename) : m_tcpServer(tcp_server), m_filename(filename) {}
-    void acc_menu();
-
-protected:
-     void run();
+    MyThread(MyServer* tcp_server) : m_tcpServer(tcp_server) {}
+    void account_management_menu();
+    void techbase_management_menu();
+    void tech_management_menu(TechBase* DATABASE);
+    void run();
 
 private:
     MyServer* m_tcpServer;
-    std::string m_filename;
 };
 
 #endif // MYTHREAD_H

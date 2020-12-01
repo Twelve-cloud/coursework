@@ -3,6 +3,7 @@
 
 #include "auth_window.h"
 #include "regi_window.h"
+#include "createdb_window.h"
 #include "incryption.h"
 #include "constants.inc"
 #include <QTcpSocket>
@@ -23,6 +24,11 @@ private slots:
     void Registration();
     void slotFullScreen();
     void slotReadyRead();
+    void backToAuth();
+    void sendDbData();
+    void createDB();
+    void connectDB();
+    void exit();
 
 private:
     enum MAX_MENUS {
@@ -38,6 +44,7 @@ private:
     QAction* full_screen;
     AuthWindow m_auth;
     RegiWindow m_regi;
+    CreateDB_Window m_dbWindow;
     VigenereCipher m_msg;
     QTcpSocket* m_socket;
     quint16 m_nextBlockSize;

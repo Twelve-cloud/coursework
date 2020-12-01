@@ -28,6 +28,7 @@ CONFIG += c++11
 
 SOURCES += \
         auth_window.cpp \
+        createdb_window.cpp \
         incryption.cpp \
         main.cpp \
         mainwindow.cpp \
@@ -36,12 +37,14 @@ SOURCES += \
 HEADERS += \
         auth_window.h \
         constants.inc \
+        createdb_window.h \
         incryption.h \
         mainwindow.h \
         regi_window.h
 
 FORMS += \
         auth_window.ui \
+        createdb_window.ui \
         mainwindow.ui \
         regi_window.ui
 

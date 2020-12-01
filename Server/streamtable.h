@@ -40,6 +40,19 @@ public:
         return os_;
     }
 
+    void MakeRow() {
+        DelimCol();
+
+        int ic;
+        for (ic = 0; ic < (int)colWidth_.size(); ic++) {
+            if (visible_[ic]) {
+                os_.width(colWidth_[ic] + 1);
+                os_.fill(delimRow_);
+                DelimCol();
+            }
+        }
+    }
+
     //отображать внешние границы?
     void MakeBorderExt(bool on) {
         borderExtOn_ = on;
@@ -69,6 +82,9 @@ public:
         return colWidth_.back();
     }
 
+    void firstCell(bool isFirst) {
+        firstCell_ = isFirst;
+    }
 
     void SetCols(int colCount, int colWidth = 0) {
         Clear();

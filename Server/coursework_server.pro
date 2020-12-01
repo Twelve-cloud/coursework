@@ -28,18 +28,28 @@ CONFIG += console
 
 SOURCES += \
         account.cpp \
+        account_base.cpp \
+        dbnames_base.cpp \
         incryption.cpp \
         main.cpp \
+        menu.cpp \
         mythread.cpp \
-        server.cpp
+        server.cpp \
+        tech.cpp \
+        tech_base.cpp
 
 HEADERS += \
         account.h \
-        constants.inc \
+        account_base.h \
+        constants.h \
+        dbnames_base.h \
         incryption.h \
         mythread.h \
         server.h \
-        streamtable.h
+        streamtable.h \
+        sysfunction.h \
+        tech.h \
+        tech_base.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

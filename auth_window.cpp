@@ -1,4 +1,5 @@
 #include "auth_window.h"
+#include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QGridLayout>
 
@@ -14,6 +15,7 @@ AuthWindow::AuthWindow(QWidget *parent) : QWidget(parent) {
     m_passwordLine  = new QLineEdit(this);
     m_passwordLine -> setEchoMode(QLineEdit::Password);
     m_loginBtn      = new QPushButton("&Log In");
+    m_loginBtn -> setShortcut(Qt::Key_Return);
     m_registerBtn   = new QPushButton("&Register");
 
     QHBoxLayout *gen_label = new QHBoxLayout;
@@ -21,8 +23,8 @@ AuthWindow::AuthWindow(QWidget *parent) : QWidget(parent) {
 
     QGridLayout* main_layout = new QGridLayout;
     main_layout -> addItem(gen_label, 0, 1);
-    main_layout -> addWidget(m_loginLbl, 1, 0);
-    main_layout -> addWidget(m_passwordLbl, 2, 0);
+    main_layout -> addWidget(m_loginLbl, 1, 0, Qt::AlignRight);
+    main_layout -> addWidget(m_passwordLbl, 2, 0, Qt::AlignRight);
     main_layout -> addWidget(m_loginLine, 1, 1);
     main_layout -> addWidget(m_passwordLine, 2, 1);
     main_layout -> addWidget(m_loginBtn, 3, 1);
@@ -59,7 +61,15 @@ void AuthWindow::clearLines() {
     m_passwordLine -> clear();
 }
 
-void AuthWindow::setError(const QString& error_str) {
+bool AuthWindow::isEmptyLine()
+{
+    if (m_userLog.isEmpty() || m_userPass.isEmpty())
+        return true;
+    return false;
+}
+
+void AuthWindow::setError(const QString& error_str)
+{
     m_generalLbl -> setText(error_str);
     if (error_str != "Authentification") {
         m_generalLbl -> setStyleSheet("color: red");
@@ -67,5 +77,17 @@ void AuthWindow::setError(const QString& error_str) {
 
     if (error_str == "Authentification") {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
+    }
+}
+
+void AuthWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Down)
+    {
+        m_passwordLine -> setFocus();
+    }
+    else if (event->key() == Qt::Key_Up)
+    {
+        m_loginLine -> setFocus();
     }
 }

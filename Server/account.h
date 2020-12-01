@@ -2,56 +2,29 @@
 #define ACCOUNT_H
 
 #include <string>
-#include <cstdint>
-#include <fstream>
-#include <cassert>
 
-class Account {
+class Account
+{
 public:
     Account() {}
-    Account(std::string login, std::string password)
-        : m_login(login), m_password(password) {}
+    Account(const std::string& login, const std::string& password): m_login(login), m_password(password) {}
+    /* 2 конструктора: 1-ый с по умолчанию, 2-ой с двумя параметрами */
 
-    std::string getLogin   () { return m_login; }
-    std::string getPassword() { return m_password; }
+    std::string getLogin   () const { return m_login; }
+    std::string getPassword() const { return m_password; }
+    /* 2 геттера */
+
+    void setLogin   (const std::string& login) { m_login = login; }
+    void setPassword(const std::string& password) {m_password = password; }
+    /* 2 сеттера */
+
     friend std::ostream& operator<<(std::ostream& out, const Account& object);
     friend std::istream& operator>>(std::istream& in, Account& object);
+    /* 2 дружественные функции для перегрузки оператора вставки и оператора извлечения */
 
 private:
     std::string m_login;
     std::string m_password;
-};
-
-class AccountBase {
-public:
-    class Node {
-    public:
-        Account *m_object;
-        Node *next, *prev;
-        Node(Account* object) : m_object(object) {
-            next = prev = nullptr;
-        }
-        friend std::ostream& operator<<(std::ostream& out, const Node* object);
-    };
-
-    AccountBase();
-    ~AccountBase();
-
-    void add(Account* object);
-    void filltration(const std::string& login);
-    void sort();
-    Node* find(std::string login, int);
-    Node* find(uint32_t index);
-    bool find(std::string login);
-    bool findAccount(std::string login, std::string password);
-    bool remove(std::string login);
-    std::uint32_t length() { return m_length; }
-    friend std::ostream& operator<<(std::ostream& out, const AccountBase& object);
-    Node* operator[](uint32_t index) { assert(index < m_length && "Invalid index"); return find(index);}
-
-private:
-    Node *pbeg, *pend;
-    std::uint32_t m_length;
 };
 
 #endif // ACCOUNT_H

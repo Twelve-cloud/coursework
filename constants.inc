@@ -5,13 +5,20 @@ namespace SendingCodes {
     enum Action {
         AUTHENTIFICATION,
         REGISTRATION,
+        CREATE_DB,
+        CONNECT_DB,
     };
 
-    enum ReturnCode {
+    enum ReturnCode
+    {
         FAIL_AUTHENTIFICATION,
         FAIL_REGISTRATION,
         SUCCESS_REGISTRATION,
-        SUCCESS_AUTHENTIFICATION
+        SUCCESS_AUTHENTIFICATION,
+        DATABASE_CREATION_SUCCESS,
+        DATABASE_CREATION_FAIL,
+        DATABASE_CONNECTION_SUCCESS,
+        DATABASE_CONNECTION_FAIL,
     };
 }
 

@@ -1,4 +1,5 @@
 #include "regi_window.h"
+#include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QGridLayout>
 
@@ -17,7 +18,9 @@ RegiWindow::RegiWindow(QWidget *parent) : QWidget(parent) {
     m_confirmLine   = new QLineEdit(this);
     m_confirmLine   -> setEchoMode(QLineEdit::Password);
     m_registerBtn   = new QPushButton("&Register");
+    m_registerBtn   -> setShortcut(Qt::Key_Return);
     m_clearBtn      = new QPushButton("&Clear");
+    m_backBtn       = new QPushButton("&Back");
 
     QHBoxLayout* gen_label = new QHBoxLayout;
     gen_label -> addWidget(m_generalLbl,  Qt::Alignment(Qt::AlignHCenter | Qt::AlignVCenter));
@@ -32,6 +35,7 @@ RegiWindow::RegiWindow(QWidget *parent) : QWidget(parent) {
     main_layout -> addWidget(m_confirmLine, 3, 1);
     main_layout -> addWidget(m_registerBtn, 4, 1);
     main_layout -> addWidget(m_clearBtn, 5, 1);
+    main_layout -> addWidget(m_backBtn, 6, 1);
     main_layout -> setHorizontalSpacing(2);
     main_layout -> setVerticalSpacing(2);
     main_layout -> setContentsMargins(30, 0, 40, 0);
@@ -41,13 +45,14 @@ RegiWindow::RegiWindow(QWidget *parent) : QWidget(parent) {
     connect(m_registerBtn, SIGNAL(clicked()), this, SLOT(ConfirmLine_edited()));
     connect(m_registerBtn, SIGNAL(clicked()), this, SLOT(Registration2_clicked()));
     connect(m_clearBtn, SIGNAL(clicked()), this, SLOT(Clear_clicked()));
+    connect(m_backBtn, SIGNAL(clicked()), this, SLOT(Back_clicked()));
     setLayout(main_layout);
 }
 
 void RegiWindow::Registration2_clicked() {
-    if (m_userLog.size() < 6 || m_userLog.size() > 30) {
+    if (m_userLog.size() < 6 || m_userLog.size() > 15) {
         setError("Login must be between 6 and 30 characters");
-    } else if (m_userPass.size() < 6 || m_userPass.size() > 30) {
+    } else if (m_userPass.size() < 6 || m_userPass.size() > 15) {
         setError("Password must be between 6 and 30 characters");
     } else {
         emit registration2_clicked();
@@ -56,6 +61,11 @@ void RegiWindow::Registration2_clicked() {
 
 void RegiWindow::Clear_clicked() {
     clearLines();
+}
+
+void RegiWindow::Back_clicked()
+{
+    emit back_to_auth_clicked();
 }
 
 void RegiWindow::LoginLine_edited() {
@@ -89,5 +99,26 @@ void RegiWindow::setError(const QString& error_str) {
 
     if (error_str == "Registration") {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
+    }
+}
+
+void RegiWindow::keyPressEvent(QKeyEvent *event)
+{
+    static uint32_t count = 1;
+    if (event->key() == Qt::Key_Down && count < 3)
+    {
+        count++;
+        if (count == 2)
+            m_passwordLine -> setFocus();
+        else if (count == 3)
+            m_confirmLine -> setFocus();
+    }
+    else if (event->key() == Qt::Key_Up && count > 1)
+    {
+        count--;
+        if (count == 1)
+            m_loginLine -> setFocus();
+        else if (count == 2)
+            m_passwordLine -> setFocus();
     }
 }

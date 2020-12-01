@@ -1,178 +1,24 @@
 #include "account.h"
 #include "streamtable.h"
-#include <conio.h>
-#include <windows.h>
 #include <iostream>
-#include <sstream>
+#include <iomanip>
+#include <climits>
 
-// Реализация Account ниже
+extern StreamTable st;
 
-std::ostream& operator<<(std::ostream& out, const Account& object) {
-    std::cout << object.m_login << std::endl;
-    std::cout << object.m_password << std::endl;
+std::ostream& operator<<(std::ostream& out, const Account& object)
+{
+    st << object.m_login;
+    st << object.m_password;
 
     return out;
 }
-std::istream& operator>>(std::istream& in, Account& object) {
-    std::cout << "Enter login: ";    std::cin >> object.m_login;
-    std::cout << "Enter password: "; std::cin >> object.m_password;
+std::istream& operator>>(std::istream& in, Account& object)
+{
+    std::cout << "Enter login: ";    std::cin >> std::setw(15) >> object.m_login;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Enter password: "; std::cin >> std::setw(15) >> object.m_password;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     return in;
-}
-
-// Реализация AccountBase ниже
-
-AccountBase::AccountBase() {
-    pbeg = pend = nullptr;
-    m_length = 0;
-}
-
-AccountBase::~AccountBase() {
-    while (pbeg != nullptr) {
-        Node *tmp = pbeg;
-        pbeg = pbeg -> next;
-        delete tmp;
-    }
-}
-
-void AccountBase::add(Account* object) {
-    Node *new_account = new Node(object);
-    if (pbeg == 0) {
-        pbeg = pend = new_account;
-    } else {
-        new_account -> prev = pend;
-        pend -> next = new_account;
-        pend = new_account;
-    }
-    ++m_length;
-}
-
-void AccountBase::filltration(const std::string &login) {
-    system("cls");
-    StreamTable st(std::cout);
-    st.AddCol(20);
-    st.AddCol(20);
-    st.MakeBorderExt(true);
-    st.SetDelimRow(true, '-');
-    st.SetDelimCol(true, '|');
-
-    std::cout << "Enter login: ";
-    for (char a : login) {
-        putchar(a);
-    }
-
-    Node *target = pbeg;
-    while (target != nullptr) {
-        if (!target -> m_object -> getLogin().compare(0, login.size(), login)) {
-            st << target -> m_object -> getLogin() << target -> m_object -> getPassword();
-        }
-       target = target -> next;
-    }
-}
-
-void AccountBase::sort() {
-
-}
-
-bool AccountBase::find(std::string login) {
-    Node *target = pbeg;
-    while (target != nullptr) {
-        if (target -> m_object -> getLogin() == login) {
-            return true;
-        }
-       target = target -> next;
-    }
-
-    return false;
-}
-
-bool AccountBase::findAccount(std::string login, std::string password) {
-    Node *target = pbeg;
-    while (target != nullptr) {
-        if (target -> m_object -> getLogin() == login &&
-            target -> m_object -> getPassword() == password) {
-            return true;
-        }
-       target = target -> next;
-    }
-
-    return false;
-}
-
-AccountBase::Node* AccountBase::find(std::string login, int) { // для поиска ячейки в удалении
-    Node *target = pbeg;
-    while (target != nullptr && target -> m_object -> getLogin() != login) {
-       target = target -> next;
-    }
-
-    return target;
-}
-
-AccountBase::Node* AccountBase::find(uint32_t index) { // для поиска ячейки в удалении
-    uint32_t counter = 0;
-    Node *target = pbeg;
-    while (target != nullptr && index != counter) {
-       target = target -> next;
-       counter++;
-    }
-
-    return target;
-}
-
-
-bool AccountBase::remove(std::string login) {
-    if (Node *target = find(login, 0)) {
-
-        if (target == pbeg) {
-            pbeg = pbeg -> next;
-
-            if (pbeg) {
-                pbeg -> prev = nullptr;
-            }
-
-        } else if (target == pend) {
-            pend = pend -> prev;
-            pend -> next = nullptr;
-        } else {
-            target -> next -> prev = target -> prev;
-            target -> prev -> next = target -> next;
-        }
-        --m_length;
-        return true;
-    }
-
-    return false;
-}
-
-std::ostream& operator<<(std::ostream& out, const AccountBase::Node* object)
-{
-    StreamTable st(std::cout);
-    st.SetCols(2, 30);
-    st.MakeBorderExt(true);
-    st.SetDelimRow(true, '-');
-    st.SetDelimCol(true, '|');
-
-    st << object -> m_object -> getLogin() << object -> m_object -> getPassword();
-
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const AccountBase& object)
-{
-    StreamTable st(std::cout);
-    st.SetCols(2, 30);
-    st.MakeBorderExt(true);
-    st.SetDelimRow(true, '-');
-    st.SetDelimCol(true, '|');
-
-    st << "Login" << "Password";
-
-    AccountBase::Node* tmp = object.pbeg;
-    while (tmp != nullptr)
-    {
-        st << tmp -> m_object -> getLogin() << tmp -> m_object -> getPassword();
-        tmp = tmp -> next;
-    }
-
-    return out;
 }

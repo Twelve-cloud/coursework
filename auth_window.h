@@ -7,13 +7,15 @@
 #include <QString>
 #include <QLineEdit>
 
-class AuthWindow : public QWidget {
+class AuthWindow : public QWidget
+{
     Q_OBJECT
 public:
     explicit AuthWindow(QWidget *parent = nullptr);
     QString& getLogin() { return m_userLog; };
     QString& getPassword() { return m_userPass; }
     void setError(const QString& error_str);
+    bool isEmptyLine();
     void clearLines();
 
 signals:
@@ -25,6 +27,9 @@ private slots:
     void Registration_clicked();
     void LoginLine_edited();
     void PasswordLine_edited();
+
+protected:
+   virtual void keyPressEvent(QKeyEvent *event);
 
 private:
     QPushButton *m_registerBtn, *m_loginBtn;

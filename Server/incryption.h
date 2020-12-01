@@ -7,7 +7,8 @@
 
 using std::uint32_t;
 
-class VigenereCipher {
+class VigenereCipher
+{
 public:
     VigenereCipher();
     void incrypt(const QString& keyword, QString& message);
@@ -15,7 +16,8 @@ public:
     char findLetter(uint32_t j, char sym);
 
 private:
-    enum Letter {
+    enum Letter
+    {
         ZERO, ONE, TWO, THREE,
         FOUR, FIVE, SIX, SEVEN,
         EIGHT, NINE, A, B, C, D,

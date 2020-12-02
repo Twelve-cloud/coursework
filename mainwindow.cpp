@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "constants.inc"
+#include "constants.h"
 #include <QMenu>
 #include <QApplication>
 #include <QMenuBar>
@@ -7,9 +7,16 @@
 #include <QAction>
 #include <QMessageBox>
 #include <QShortcut>
+#include <QMdiArea>
+#include <QMdiSubWindow>
+#include <QScreen>
+#include <QTableWidget>
+#include <QHeaderView>
 
-MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent)
-    : QMainWindow(parent), m_nextBlockSize(0) {
+std::string getWord(std::string str, std::string& field);
+
+MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMainWindow(parent), m_nextBlockSize(0)
+{
     m_socket = new QTcpSocket(this);
     m_socket -> connectToHost(hostname, port);
     connect(m_socket, SIGNAL(readyRead()), SLOT(slotReadyRead()));
@@ -54,6 +61,33 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent)
     m_menu[WINDOW]  -> addAction(full_screen);
     m_menu[HELP]    -> addAction(about);
 
+    leftMenu = new QMdiArea(this);
+
+    m_types = new TypeWindow(leftMenu);
+    subWindowTypes = leftMenu -> addSubWindow(m_types);
+    subWindowTypes -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    subWindowTypes -> move(0, 0);
+    subWindowTypes -> setFixedSize(260, QGuiApplication::screens().at(0)->geometry().height() - this->height() + 10);
+    subWindowTypes -> hide();
+
+    m_actions = new ActionWindow(leftMenu);
+    subWindowActions = leftMenu -> addSubWindow(m_actions);
+    subWindowActions -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    subWindowActions -> move(260, 0);
+    subWindowActions -> setFixedSize(260, QGuiApplication::screens().at(0)->geometry().height() - this->height() + 10);
+    subWindowActions -> hide();
+
+    m_table = new QTableWidget;
+
+    subWindowTable = leftMenu -> addSubWindow(m_table);
+    subWindowTable -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    subWindowTable -> move(520, 0);
+    subWindowTable -> setFixedSize(QGuiApplication::screens().at(0)->geometry().width() - 520, QGuiApplication::screens().at(0)->geometry().height() - this->height() + 10);
+    subWindowTable -> hide();
+
+    setCentralWidget(leftMenu);
+
+    connect(m_types, SIGNAL(menu_actions_call()), this, SLOT(slot_menu_actions_call()));
     connect(createDB, SIGNAL(triggered()), this, SLOT(createDB()));
     connect(connectDB, SIGNAL(triggered()), this, SLOT(connectDB()));
     connect(back, SIGNAL(triggered()), this, SLOT(exit()));
@@ -84,7 +118,7 @@ void MainWindow::registerWindowShow() {
 
 void MainWindow::Authorization() {
     if (!m_auth.isEmptyLine()) {
-        SendToServer(SendingCodes::AUTHENTIFICATION, m_auth.getLogin(), m_auth.getPassword());
+        SendToServer(SendingCodes::AUTHENTIFICATION, m_auth.getLogin() + " " + m_auth.getPassword());
     } else {
         m_auth.setError("Fill all fields");
     }
@@ -92,7 +126,7 @@ void MainWindow::Authorization() {
 
 void MainWindow::Registration() {
     if (m_regi.checkPass()) {
-        SendToServer(SendingCodes::REGISTRATION, m_regi.getLogin(), m_regi.getPassword());
+        SendToServer(SendingCodes::REGISTRATION, m_regi.getLogin() + " " + m_regi.getPassword());
     } else {
         m_regi.setError("Confirm incorrect");
     }
@@ -116,11 +150,11 @@ void MainWindow::sendDbData()
 {
     if (m_dbWindow.checkAction())
     {
-        SendToServer(SendingCodes::CREATE_DB, m_dbWindow.getName(), m_dbWindow.getPass());
+        SendToServer(SendingCodes::CREATE_DB, m_dbWindow.getName() + " " + m_dbWindow.getPass());
     }
     else
     {
-        SendToServer(SendingCodes::CONNECT_DB, m_dbWindow.getName(), m_dbWindow.getPass());
+        SendToServer(SendingCodes::CONNECT_DB, m_dbWindow.getName() + " " + m_dbWindow.getPass());
     }
 }
 
@@ -140,29 +174,65 @@ void MainWindow::connectDB()
     m_dbWindow.show();
 }
 
-void MainWindow::slotReadyRead()
+void MainWindow::slot_menu_actions_call()
 {
-    QDataStream in(m_socket);
-    qint16 result;
+    m_table ->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    subWindowTable -> show();
+    subWindowActions -> show();
+    m_table -> setRowCount(0);
+    getColsTable(m_types -> getType());
+    SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
+}
 
-    while (true) {
+void MainWindow::getColsTable(QString type)
+{
+    char* Tech[] = {"ID", "Type", "Date", "Time", "Day", "Serial Number", " Manufacturer", "Release Date", "Model", "Vendor", "Countrymaker", "Price"};
 
-        if (!m_nextBlockSize) {
-            if (m_socket -> bytesAvailable() < sizeof(quint16)) {
-                break;
-            }
-            in >> m_nextBlockSize;
-        }
-
-        if (m_socket -> bytesAvailable() < m_nextBlockSize) {
-            break;
-        }
-
-        in >> result;
-
-        m_nextBlockSize = 0;
+    if (type == "Computer")
+    {
+        m_table -> setColumnCount(18);
+    }
+    if (type == "MobilePhone")
+    {
+        m_table -> setColumnCount(19);
+    }
+    if (type == "TV")
+    {
+        m_table -> setColumnCount(18);
+    }
+    if (type == "Toaster")
+    {
+        m_table -> setColumnCount(16);
+    }
+    if (type == "CoffeeMaker")
+    {
+        m_table -> setColumnCount(15);
+    }
+    if (type == "ElectricKettle")
+    {
+        m_table -> setColumnCount(15);
+    }
+    if (type == "Fridge")
+    {
+        m_table -> setColumnCount(16);
+    }
+    if (type == "Conditioner")
+    {
+        m_table -> setColumnCount(16);
+    }
+    if (type == "Microwave")
+    {
+        m_table -> setColumnCount(17);
     }
 
+    for (int i = 0; i < 12; i++)
+    {
+        m_table -> setHorizontalHeaderItem(i, new QTableWidgetItem(Tech[i]));
+    }
+}
+
+void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString string)
+{
 
     switch(result)
     {
@@ -212,20 +282,134 @@ void MainWindow::slotReadyRead()
         {
             m_dbWindow.clearLines();
             m_dbWindow.hide();
+            subWindowTypes -> show();
+            break;
+        }
+        case SendingCodes::GET_RECORDS_SUCCESS:
+        {
+            uint32_t count = 0;
+            std::string str = string.toStdString(), field;
+            m_table -> insertRow(compRecordsCount);
+
+            for (int i = 0; i < 12; i++)
+            {
+                str = getWord(str, field);
+                m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+            }
+
+            if (m_types -> getType() == "Computer")
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
+            if (m_types -> getType() == "MobilePhone")
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
+            if (m_types -> getType() == "TV")
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
+            if (m_types -> getType() == "Toaster")
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
+            if (m_types -> getType() == "CoffeeMaker")
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
+            if (m_types -> getType() == "ElectricKettle")
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
+            if (m_types -> getType() == "Fridge")
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
+            if (m_types -> getType() == "Conditioner")
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
+            if (m_types -> getType() == "Microwave")
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    str = getWord(str, field);
+                    m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
+                }
+            }
             break;
         }
         default: qFatal("Error. Server send wrong data.");
     }
 }
 
-void MainWindow::SendToServer(qint16 choice, QString login, QString password) {
+void MainWindow::slotReadyRead()
+{
+    QDataStream in(m_socket);
+    qint16 result;
+    QString string;
+    uint32_t compRecordsCount = 0;
+
+    while (true)
+    {
+
+        if (!m_nextBlockSize)
+        {
+            if (m_socket -> bytesAvailable() < sizeof(quint16))
+            {
+                break;
+            }
+            in >> m_nextBlockSize;
+        }
+
+        if (m_socket -> bytesAvailable() < m_nextBlockSize)
+        {
+            break;
+        }
+        in >> result >> string;
+        handleResult(compRecordsCount++, result, string);
+        m_nextBlockSize = 0;
+    }
+}
+
+void MainWindow::SendToServer(qint16 choice, QString string)
+{
     QByteArray  arrBlock;
     QDataStream out(&arrBlock, QIODevice::WriteOnly);
 
-    m_msg.incrypt("LOGIN", login);
-    m_msg.incrypt("PASSWORD", password);
-
-    out << quint16(0) << choice << login << password;
+    out << quint16(0) << choice << string;
     out.device() -> seek(0);
     out << quint16(arrBlock.size() - sizeof(quint16));
 

@@ -26,6 +26,16 @@ RegiWindow {
     background: rgb(50, 50, 50);
 }
 
+TypeWindow {
+    /* цвет фона класса окна типов */
+    background: rgb(50, 50, 50);
+}
+
+QMdiSubWindow {
+    /* цвет фона класса окна типов */
+    background: rgb(50, 50, 50);
+}
+
 CreateDB_Window {
     /* цвет фона класса окна регистрации */
     background: rgb(50, 50, 50);

@@ -20,8 +20,7 @@ CreateDB_Window::CreateDB_Window(QWidget *parent) : QWidget(parent)
     m_dbNameLine       = new QLineEdit(this);
     m_dbPassLine       = new QLineEdit(this);
     m_dbPassLine       -> setEchoMode(QLineEdit::Password);
-    m_okBtn            = new QPushButton("&Create");
-    m_okBtn            -> setShortcut(Qt::Key_Return);
+    m_okBtn            = new QPushButton("&Create | Connect");
 
     QHBoxLayout *gen_label = new QHBoxLayout;
     gen_label -> addWidget(m_dbSettingsLbl,  Qt::Alignment(Qt::AlignHCenter | Qt::AlignVCenter));
@@ -45,7 +44,45 @@ CreateDB_Window::CreateDB_Window(QWidget *parent) : QWidget(parent)
 
 void CreateDB_Window::Ok_clicked()
 {
-    emit send_db_settings_clicked();
+    bool isWrong = false;
+
+    if(m_okBtn ->text() == "Create")
+    {
+        for (const auto& ch : m_dbName)
+        {
+            if (!ch.isDigit() && !ch.isLetter())
+            {
+                setError("Database name must contain only digits and letters");
+                isWrong = true;
+            }
+        }
+
+        for (const auto& ch : m_dbPass)
+        {
+            if (!ch.isDigit() && !ch.isLetter())
+            {
+                setError("Password must contain only digits and letters");
+                isWrong = true;
+            }
+        }
+
+        if (m_dbName.size() < 6 || m_dbName.size() > 20)
+        {
+            setError("Database name must be between 6 and 20 characters");
+        }
+        else if (m_dbPass.size() < 6 || m_dbPass.size() > 20)
+        {
+            setError("Password must be between 6 and 20 characters");
+        }
+        else if (!isWrong)
+        {
+            emit send_db_settings_clicked();
+        }
+    }
+    else
+    {
+        emit send_db_settings_clicked();
+    }
 }
 
 void CreateDB_Window::dbNameLine_edited()
@@ -67,6 +104,7 @@ void CreateDB_Window::clearLines()
 void CreateDB_Window::changeOkName(QString btnName)
 {
     m_okBtn -> setText(btnName);
+    m_okBtn -> setShortcut(Qt::Key_Return);
 }
 
 bool CreateDB_Window::checkAction()

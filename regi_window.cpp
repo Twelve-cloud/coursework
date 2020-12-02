@@ -49,12 +49,34 @@ RegiWindow::RegiWindow(QWidget *parent) : QWidget(parent) {
     setLayout(main_layout);
 }
 
-void RegiWindow::Registration2_clicked() {
+void RegiWindow::Registration2_clicked()
+{
+
+    bool isWrong= false;
+
+    for (const auto& ch : m_userLog)
+    {
+        if (!ch.isDigit() && !ch.isLetter())
+        {
+            setError("Login must contain only digits and letters");
+            isWrong = true;
+        }
+    }
+
+    for (const auto& ch : m_userPass)
+    {
+        if (!ch.isDigit() && !ch.isLetter())
+        {
+            setError("Password must contain only digits and letters");
+            isWrong = true;
+        }
+    }
+
     if (m_userLog.size() < 6 || m_userLog.size() > 15) {
-        setError("Login must be between 6 and 30 characters");
+        setError("Login must be between 6 and 15 characters");
     } else if (m_userPass.size() < 6 || m_userPass.size() > 15) {
-        setError("Password must be between 6 and 30 characters");
-    } else {
+        setError("Password must be between 6 and 15 characters");
+    } else if (!isWrong){
         emit registration2_clicked();
     }
 }

@@ -1,4 +1,4 @@
-#include "auth_window.h"
+ #include "auth_window.h"
 #include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QGridLayout>

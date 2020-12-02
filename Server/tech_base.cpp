@@ -141,8 +141,8 @@ void TechBase::readFile() // НЕ ДОДЕЛАНО
 {
     std::uint32_t ID;
     std::string type;
-    std::map<std::string, Tech*> create_type = {{"Computer", new Computer},{"Mobile Phone", new MobilePhone}, {"TV", new TV}, {"Toaster", new Toaster},
-                                                {"Coffee Maker", new CoffeMaker}, {"Electric Kottle", new ElKettle}, {"Fridge", new Fridge},
+    std::map<std::string, Tech*> create_type = {{"Computer", new Computer},{"MobilePhone", new MobilePhone}, {"TV", new TV}, {"Toaster", new Toaster},
+                                                {"CoffeeMaker", new CoffeMaker}, {"ElectricKettle", new ElKettle}, {"Fridge", new Fridge},
                                                 {"Conditioner", new Conditioner}, {"Microwave", new Microwawe}};
 
     m_fstream.open(m_filename + ".txt", std::ios_base::in);

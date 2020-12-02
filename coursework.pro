@@ -27,26 +27,34 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        action_window.cpp \
         auth_window.cpp \
         createdb_window.cpp \
         incryption.cpp \
         main.cpp \
         mainwindow.cpp \
-        regi_window.cpp
+        regi_window.cpp \
+        sysfunction.cpp \
+        type_window.cpp
 
 HEADERS += \
+        action_window.h \
         auth_window.h \
-        constants.inc \
+        constants.h \
         createdb_window.h \
         incryption.h \
         mainwindow.h \
-        regi_window.h
+        regi_window.h \
+        type_window.h
 
 FORMS += \
+        action_window.ui \
         auth_window.ui \
         createdb_window.ui \
         mainwindow.ui \
-        regi_window.ui
+        output_menu.ui \
+        regi_window.ui \
+        type_window.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -14,7 +14,9 @@ public:
     void rewriteDB();
     void setFilename(const std::string& filename) { m_filename = filename; }
     std::string getFilename() const { return m_filename; }
+    TechBase* getDB(uint32_t index) { return (*this)[index]; }
     /* Функции для работы непосредственно с файлом: чтение из файла, перезапись файла, получение имени файла и задание имени файла */
+
 
     void addDb(TechBase* object);
     void remDb(const std::string& filename);

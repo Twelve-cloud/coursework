@@ -7,7 +7,8 @@
 #include <QString>
 #include <QLineEdit>
 
-class RegiWindow : public QWidget {
+class RegiWindow : public QWidget
+{
     Q_OBJECT
 public:
     explicit RegiWindow(QWidget *parent = nullptr);

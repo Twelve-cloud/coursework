@@ -9,6 +9,12 @@ namespace SendingCodes
         REGISTRATION,
         CREATE_DB,
         CONNECT_DB,
+        GET_RECORDS,
+        ADD_RECORD,
+        DELETE_RECORD,
+        CHANGE_RECORD,
+        FIND_RECORD,
+        SORT_RECORDS,
     };
 
     enum ReturnCode
@@ -21,6 +27,12 @@ namespace SendingCodes
         DATABASE_CREATION_FAIL,
         DATABASE_CONNECTION_SUCCESS,
         DATABASE_CONNECTION_FAIL,
+        GET_RECORDS_SUCCESS,
+        ADD_RECORD_SUCCESS,
+        DELETE_RECORD_SUCCESS,
+        CHANGE_RECORD_SUCCESS,
+        FIND_RECORD_SUCCESS,
+        SORT_RECORDS_SUCCESS,
     };
 
 }

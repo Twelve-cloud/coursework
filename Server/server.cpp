@@ -1,8 +1,11 @@
-#include "server.h"
+ #include "server.h"
 #include "constants.h"
+#include <QString>
 #include <windows.h>
 #include <cstring>
 #include <iostream>
+
+void getWords(int count, std::string str, ...);
 
 MyServer::MyServer(const QString& hostname, uint32_t port, QWidget* parent): QWidget(parent), m_nextBlockSize(0)
 {
@@ -39,7 +42,7 @@ void MyServer::slotReadClient()  // данные могут идти частя�
 
     QDataStream in(clientSocket);
     qint16 choice;
-    QString login, password;
+    QString string;
 
     while (true)
     {
@@ -58,64 +61,89 @@ void MyServer::slotReadClient()  // данные могут идти частя�
         {
             break;
         }
-        in >> choice >> login >> password; // считываем данные
+        in >> choice >> string; // считываем данные
         m_nextBlockSize = 0;
     }
-
-    m_msg.decrypt("LOGIN", login);
-    m_msg.decrypt("PASSWORD", password);
 
     switch(choice)
     {
         case SendingCodes::AUTHENTIFICATION:
         {
-            if(DATABASE -> findObject(login.toStdString(), password.toStdString()))
+            char login[64], password[64];
+            getWords(3, string.toStdString(), login, password);
+            if(DATABASE -> findObject(login, password))
             {
-                sendToClient(clientSocket, SendingCodes::SUCCESS_AUTHENTIFICATION);
+                sendToClient(clientSocket, SendingCodes::SUCCESS_AUTHENTIFICATION, "");
             }
             else
             {
-                sendToClient(clientSocket, SendingCodes::FAIL_AUTHENTIFICATION);
+                sendToClient(clientSocket, SendingCodes::FAIL_AUTHENTIFICATION, "");
             }
             break;
         }
         case SendingCodes::REGISTRATION:
         {
-            if (!DATABASE -> findObject(login.toStdString()))
+            char login[64], password[64];
+            getWords(3, string.toStdString(), login, password);
+            if (!DATABASE -> findObject(login))
             {
-                sendToClient(clientSocket, SendingCodes::SUCCESS_REGISTRATION);
-                DATABASE -> push_back(new Account(login.toStdString(), password.toStdString()));
+                sendToClient(clientSocket, SendingCodes::SUCCESS_REGISTRATION, "");
+                DATABASE -> push_back(new Account(login, password));
                 DATABASE -> rewrite();
             }
             else
             {
-                sendToClient(clientSocket, SendingCodes::FAIL_REGISTRATION);
+                sendToClient(clientSocket, SendingCodes::FAIL_REGISTRATION, "");
             }
             break;
         }
         case SendingCodes::CREATE_DB:
         {
-            if (!TECH_BASE -> findDbName(login.toStdString()))
+            char dbname[64], dbpass[64];
+            getWords(3, string.toStdString(), dbname, dbpass);
+            if (!TECH_BASE -> findDbName(dbname))
             {
-                sendToClient(clientSocket, SendingCodes::DATABASE_CREATION_SUCCESS);
-                TECH_BASE -> addDb(new TechBase(login.toStdString(), password.toStdString()));
+                sendToClient(clientSocket, SendingCodes::DATABASE_CREATION_SUCCESS, "");
+                TECH_BASE -> addDb(new TechBase(dbname, dbpass));
                 TECH_BASE -> rewriteDB();
             }
             else
             {
-                sendToClient(clientSocket, SendingCodes::DATABASE_CREATION_FAIL);
+                sendToClient(clientSocket, SendingCodes::DATABASE_CREATION_FAIL, "");
             }
             break;
         }
         case SendingCodes::CONNECT_DB:
         {
-            if(TECH_BASE -> findDbName(login.toStdString(), password.toStdString()))
+            char dbname[64], dbpass[64];
+            getWords(3, string.toStdString(), dbname, dbpass);
+            if(TECH_BASE -> findDbName(dbname, dbpass))
             {
-                sendToClient(clientSocket, SendingCodes::DATABASE_CONNECTION_SUCCESS);
+                sendToClient(clientSocket, SendingCodes::DATABASE_CONNECTION_SUCCESS, "");
             }
             else
             {
-                sendToClient(clientSocket, SendingCodes::DATABASE_CONNECTION_FAIL);
+                sendToClient(clientSocket, SendingCodes::DATABASE_CONNECTION_FAIL, "");
+            }
+            break;
+        }
+        case SendingCodes::GET_RECORDS:
+        {
+            char type[64], dbname[64];
+            uint32_t index = -1;
+            std::string stringToSend;
+            getWords(3, string.toStdString(), type, dbname);
+            if (TECH_BASE -> findDbName(dbname, index))
+            {
+                for (Tech* i : *TECH_BASE -> getDB(index))
+                {
+                    if (i -> getType() == type)
+                    {
+                        i -> getStringToSend(stringToSend);
+                        sendToClient(clientSocket, SendingCodes::GET_RECORDS_SUCCESS, QString().fromStdString(stringToSend));
+                        stringToSend.clear();
+                    }
+                }
             }
             break;
         }
@@ -125,12 +153,12 @@ void MyServer::slotReadClient()  // данные могут идти частя�
     SClients.remove(sd);
 }
 
-void MyServer::sendToClient(QTcpSocket* pSocket, const qint16 res)
+void MyServer::sendToClient(QTcpSocket* pSocket, const qint16 res, QString string)
 {
     QByteArray  arrBlock;
     QDataStream out(&arrBlock, QIODevice::WriteOnly);
 
-    out << quint16(0) << res;
+    out << quint16(0) << res << string;
     out.device() -> seek(0);
     out << quint16(arrBlock.size() - sizeof(quint16));
 

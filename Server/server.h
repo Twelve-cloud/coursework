@@ -18,7 +18,7 @@ class MyServer: public QWidget
 {
     Q_OBJECT
 private:
-    void sendToClient(QTcpSocket* socket, qint16 res);
+    void sendToClient(QTcpSocket* socket, qint16 res, QString string);
 
 public:
     MyServer(const QString& hostname, std::uint32_t port, QWidget* parent = nullptr);

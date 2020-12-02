@@ -32,6 +32,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const;
     virtual void readFile(std::fstream& file, Tech* obj);
     virtual void writeToFile(std::fstream& file);
+    virtual void getStringToSend(std::string& stringToSend);
 
     static std::string setCurrentDate();
 
@@ -77,6 +78,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     std::string m_processor;
@@ -90,7 +92,7 @@ private:
 class MobilePhone final: public Tech
 {
 public:
-    MobilePhone() : Tech("Mobile Phone") {}
+    MobilePhone() : Tech("MobilePhone") {}
     virtual ~MobilePhone() {};
 
     std::string& getOS() { return m_os; }
@@ -106,6 +108,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     std::string m_os;
@@ -135,6 +138,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     std::string m_typescreen;
@@ -161,6 +165,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     uint32_t m_toastcount;
@@ -172,7 +177,7 @@ private:
 class CoffeMaker final: public Tech
 {
 public:
-    CoffeMaker() : Tech("Coffee Maker") {}
+    CoffeMaker() : Tech("CoffeeMaker") {}
     virtual ~CoffeMaker() {};
 
     uint32_t& getPower() { return m_power; }
@@ -184,6 +189,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     uint32_t m_power;
@@ -194,7 +200,7 @@ private:
 class ElKettle final: public Tech
 {
 public:
-    ElKettle() : Tech("Electric Kottle") {}
+    ElKettle() : Tech("ElectricKettle") {}
     virtual ~ElKettle() {};
 
     uint32_t& getPower() { return m_power; }
@@ -206,6 +212,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     uint32_t m_power;
@@ -229,6 +236,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     uint32_t m_volume;
@@ -253,6 +261,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     std::string m_workmode;
@@ -278,6 +287,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const override final;
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
+    virtual void getStringToSend(std::string& stringToSend) override final;
 
 private:
     uint32_t m_power;

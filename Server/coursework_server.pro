@@ -35,6 +35,7 @@ SOURCES += \
         menu.cpp \
         mythread.cpp \
         server.cpp \
+        sysfunction.cpp \
         tech.cpp \
         tech_base.cpp
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <cstdint>
+#include <sstream>
 #include <ctime>
 
 extern StreamTable kt;
@@ -84,6 +85,16 @@ void Tech::readFile(std::fstream& file, Tech* obj)
     file >> obj -> getPrice();
 }
 
+void Tech::getStringToSend(std::string& stringToSend)
+{
+    std::stringstream temp;
+    temp << m_ID << " " << m_type << " "
+         << m_recordtime << " " << m_serialnumber << " "
+         << m_manufacturer << " " << m_releasedate << " "
+         << m_model << " " << m_vendor << " "
+         << m_countrymaker << " " << m_price << " ";
+    stringToSend = temp.str();
+}
 // !Виртуальные функции класса
 
 // Дружественные функции и методы класса
@@ -156,6 +167,15 @@ void Computer::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<Computer*>(obj) -> getScreenDiagonal();
 }
 
+void Computer::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_processor << " " << m_core << " " << m_ramtype << " " << m_ramsize << " " << m_screenresol << " " << m_screendiagonal;
+    stringToSend += temp.str();
+
+}
+
 std::istream& MobilePhone::setState(std::istream& in)
 {
     Tech::setState(in);
@@ -215,6 +235,14 @@ void MobilePhone::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<MobilePhone*>(obj) -> getSimCount();
 }
 
+void MobilePhone::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_os << " " << m_screenresol << " " << m_screendiagonal << " " << m_processor << " " << m_core << " " << m_ramsize << " " << m_simcount;
+    stringToSend += temp.str();
+}
+
 std::istream& TV::setState(std::istream& in)
 {
     Tech::setState(in);
@@ -271,6 +299,14 @@ void TV::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<TV*>(obj) -> get3DMode();
 }
 
+void TV::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_typescreen << " " << m_screenresolution << " " << m_screendiagonal << " " << m_processor << " " << m_core << " " << m_3Dmode;
+    stringToSend += temp.str();
+}
+
 std::istream& Toaster::setState(std::istream& in)
 {
     Tech::setState(in);
@@ -317,6 +353,14 @@ void Toaster::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<Toaster*>(obj) -> getHeating();
 }
 
+void Toaster::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_toastcount << " " << m_power << " " << m_defrostring << " " << m_heating;
+    stringToSend += temp.str();
+}
+
 std::istream& CoffeMaker::setState(std::istream& in)
 {
     Tech::setState(in);
@@ -358,6 +402,14 @@ void CoffeMaker::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<CoffeMaker*>(obj) -> getCappuccinoMaker();
 }
 
+void CoffeMaker::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_power << " " << m_pressure << " " << m_cappuccinomaker;
+    stringToSend += temp.str();
+}
+
 std::istream& ElKettle::setState(std::istream& in)
 {
     Tech::setState(in);
@@ -397,6 +449,14 @@ void ElKettle::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<ElKettle*>(obj) -> getPower();
     file >> dynamic_cast<ElKettle*>(obj) -> getVolume();
     file >> dynamic_cast<ElKettle*>(obj) -> getTimer();
+}
+
+void ElKettle::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_power << " " << m_volume << " " << m_timer;
+    stringToSend += temp.str();
 }
 
 std::istream& Fridge::setState(std::istream& in)
@@ -444,6 +504,14 @@ void Fridge::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<Fridge*>(obj) -> getMultizone();
 }
 
+void Fridge::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_volume << " " << m_shelfcount << " " << m_noiselvl << " " << m_multizone;
+    stringToSend += temp.str();
+}
+
 std::istream& Conditioner::setState(std::istream& in)
 {
     Tech::setState(in);
@@ -488,6 +556,15 @@ void Conditioner::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<Conditioner*>(obj) -> getCoolingPower();
     file >> dynamic_cast<Conditioner*>(obj) -> getHeathingPower();
     file >> dynamic_cast<Conditioner*>(obj) -> getRemouteControl();
+}
+
+void Conditioner::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_workmode << " " << m_coolingpower << " " << m_heatingpower << " " << m_remotecontol;
+    stringToSend += temp.str();
+
 }
 
 std::istream& Microwawe::setState(std::istream& in)
@@ -538,6 +615,14 @@ void Microwawe::readFile(std::fstream& file, Tech* obj)
     file >> dynamic_cast<Microwawe*>(obj) -> getVolume();
     file >> dynamic_cast<Microwawe*>(obj) -> getQuickstart();
     file >> dynamic_cast<Microwawe*>(obj) -> getTimer();
+}
+
+void Microwawe::getStringToSend(std::string& stringToSend)
+{
+    Tech::getStringToSend(stringToSend);
+    std::stringstream temp;
+    temp << m_power << " " << m_lvlpower_count << " " << m_volume << " " << m_quickstart << " " << m_timer;
+    stringToSend += temp.str();
 }
 
 // !Методы дочерних классов

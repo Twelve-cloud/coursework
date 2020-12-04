@@ -67,14 +67,14 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
     subWindowTypes = leftMenu -> addSubWindow(m_types);
     subWindowTypes -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     subWindowTypes -> move(0, 0);
-    subWindowTypes -> setFixedSize(260, QGuiApplication::screens().at(0)->geometry().height() - this->height() + 10);
+    subWindowTypes -> setFixedSize(260, QGuiApplication::screens().at(0)->geometry().height() - menuBar()->geometry().height() + 4);
     subWindowTypes -> hide();
 
     m_actions = new ActionWindow(leftMenu);
     subWindowActions = leftMenu -> addSubWindow(m_actions);
     subWindowActions -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     subWindowActions -> move(260, 0);
-    subWindowActions -> setFixedSize(260, QGuiApplication::screens().at(0)->geometry().height() - this->height() + 10);
+    subWindowActions -> setFixedSize(260, QGuiApplication::screens().at(0)->geometry().height() - menuBar()->geometry().height() + 4);
     subWindowActions -> hide();
 
     m_table = new QTableWidget;
@@ -82,11 +82,37 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
     subWindowTable = leftMenu -> addSubWindow(m_table);
     subWindowTable -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     subWindowTable -> move(520, 0);
-    subWindowTable -> setFixedSize(QGuiApplication::screens().at(0)->geometry().width() - 520, QGuiApplication::screens().at(0)->geometry().height() - this->height() + 10);
+    subWindowTable -> setFixedSize(QGuiApplication::screens().at(0)->geometry().width() - 520, QGuiApplication::screens().at(0)->geometry().height()- menuBar() ->geometry().height() + 4);
     subWindowTable -> hide();
+
+    m_deleteWidget = new DeleteWidget;
+
+    subWindowDelete = leftMenu -> addSubWindow(m_deleteWidget);
+    subWindowDelete -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    subWindowDelete -> move(QGuiApplication::screens().at(0)->geometry().width() / 2 - m_deleteWidget -> size().width() / 2,
+                            QGuiApplication::screens().at(0)->geometry().height() / 2 - m_deleteWidget -> size().height() / 2);
+    subWindowDelete -> hide();
+
+    m_findWidget = new FindWidget;
+
+    subWindowFind = leftMenu -> addSubWindow(m_findWidget);
+    subWindowFind -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    subWindowFind -> move(QGuiApplication::screens().at(0)->geometry().width() / 2 - m_deleteWidget -> size().width() / 2,
+                            QGuiApplication::screens().at(0)->geometry().height() / 2 - m_deleteWidget -> size().height() / 2);
+    subWindowFind -> hide();
 
     setCentralWidget(leftMenu);
 
+    connect(m_table, SIGNAL(cellChanged(int, int)), this, SLOT(slot_cellChanged(int, int)));
+    connect(m_findWidget, SIGNAL(find_ok_clicked()), this, SLOT(slot_findOkClicked()));
+    connect(m_findWidget, SIGNAL(find_cancel_clicked()), this, SLOT(slot_findCancelClicked()));
+    connect(m_deleteWidget, SIGNAL(delete_ok_clicked()), this, SLOT(slot_deleteOkClicked()));
+    connect(m_deleteWidget, SIGNAL(delete_cancel_clicked()), this, SLOT(slot_deleteCancelClicked()));
+    connect(m_actions, SIGNAL(add_record_clicked()), this, SLOT(slot_addRecordClicked()));
+    connect(m_actions, SIGNAL(delete_record_clicked()), this, SLOT(slot_deleteRecordClicked()));
+    connect(m_actions, SIGNAL(change_record_clicked()), this, SLOT(slot_changeRecordClicked()));
+    connect(m_actions, SIGNAL(find_record_clicked()), this, SLOT(slot_findRecordClicked()));
+    connect(m_actions, SIGNAL(sort_records_clicked()), this, SLOT(slot_sort()));
     connect(m_types, SIGNAL(menu_actions_call()), this, SLOT(slot_menu_actions_call()));
     connect(createDB, SIGNAL(triggered()), this, SLOT(createDB()));
     connect(connectDB, SIGNAL(triggered()), this, SLOT(connectDB()));
@@ -181,12 +207,192 @@ void MainWindow::slot_menu_actions_call()
     subWindowActions -> show();
     m_table -> setRowCount(0);
     getColsTable(m_types -> getType());
+    getHeaders(m_types -> getType());
+    rowChanged.clear();
     SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
+}
+
+void MainWindow::slot_sort()
+{
+    SendToServer(SendingCodes::SORT_RECORDS, " " + m_dbWindow.getName());
+}
+
+void MainWindow::slot_deleteRecordClicked()
+{
+    subWindowDelete -> hide();
+    subWindowDelete -> show();
+}
+
+void MainWindow::slot_deleteOkClicked()
+{
+    if (m_deleteWidget -> isEmptyLine())
+    {
+        m_deleteWidget -> setError("Fill all fields");
+    }
+    else
+    {
+        m_deleteWidget -> clearLines();
+        subWindowDelete -> hide();
+        SendToServer(SendingCodes::DELETE_RECORD, m_dbWindow.getName() + " " + m_types -> getType() + " " + m_deleteWidget -> getID());
+    }
+}
+
+void MainWindow::slot_deleteCancelClicked()
+{
+    m_deleteWidget -> clearLines();
+    subWindowDelete -> hide();
+}
+
+
+void MainWindow::slot_findOkClicked()
+{
+    if (m_findWidget -> isEmptyLine())
+    {
+        m_findWidget -> setError("Fill all fields");
+    }
+    else
+    {
+        m_findWidget -> clearLines();
+        subWindowFind -> hide();
+        m_table -> setRowCount(0);
+        SendToServer(SendingCodes::FIND_RECORD, m_dbWindow.getName() + " " + m_types -> getType() + " " + m_findWidget -> getID());
+    }
+}
+
+void MainWindow::slot_findCancelClicked()
+{
+    m_findWidget -> clearLines();
+    subWindowFind -> hide();
+}
+
+void MainWindow::slot_findRecordClicked()
+{
+    subWindowFind -> hide();
+    subWindowFind -> show();
+}
+
+void MainWindow::slot_addRecordClicked()
+{
+    SendToServer(SendingCodes::ADD_RECORD, m_dbWindow.getName() + " " + m_types -> getType());
+    m_table -> setRowCount(0);
+    SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
+}
+
+void MainWindow::slot_changeRecordClicked()
+{
+    QString replace_spaces;
+    for (uint32_t i = 0; i < m_table -> rowCount(); i++)
+    {
+        QString stringToSend = m_dbWindow.getName() + " " + m_types -> getType() + " ";
+        if (rowChanged[i] == true)
+        {
+            stringToSend += m_table -> item(i, 0) -> text() + " ";
+            for (int j = 5; j < m_table -> columnCount(); j++)
+            {
+                replace_spaces = m_table -> item(i,j) -> text();
+                replace_spaces.replace(" ", "|");
+                stringToSend += replace_spaces + " ";
+            }
+            SendToServer(SendingCodes::CHANGE_RECORD, stringToSend);
+        }
+        stringToSend.clear();
+    }
+    rowChanged.clear();
+    m_table -> setRowCount(0);
+    SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
+}
+
+void MainWindow::slot_cellChanged(int row, int col)
+{
+    if (col > 4)
+        rowChanged[row] = true;
+}
+
+void MainWindow::getHeaders(QString type)
+{
+    char* Tech[] = {"ID", "Type", "Date", "Time", "Day", "Serial Number", " Manufacturer", "Release Date", "Model", "Vendor", "Countrymaker", "Price"};
+    char* Computer[] = {"Processor", "Core", "Ram Type", "Ram Size", "Screen res", "Screen diagonal"};
+    char* Mobile[] = {"OS", "Screen res", "Screen diagonal", "Processor", "Core", "Ram Size", "Sim count"};
+    char* TV[] = {"Type of screen", "Screen res", "Screen diagonal", "Processor", "Core", "3D"};
+    char* Toaster[] = {"Toast count", "Power", "Defrosting mode", "Heating mode"};
+    char* CoffeeMaker[] = {"Power", "Pressure", "Cap.maker"};
+    char* ElKettle[] = {"Power", "Volume", "Timer"};
+    char* Fridge[] = {"Volume", "Shelf count", "Noise lvl", "Multizone"};
+    char* Conditioner[] = {"Work mode", "Cooling power", "Heathing power", "Remote contol"};
+    char* Microwave[] = {"Power", "Lvls of power", "Volume", "Quickstart", "Timer"};
+    int count = 0, childCount = 0;
+    for (; count < 12; count++)
+    {
+        m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Tech[count]));
+    }
+
+    if (type == "Computer")
+    {
+        for (; count < 18; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Computer[childCount++]));
+        }
+    }
+    if (type == "MobilePhone")
+    {
+        for (; count < 19; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Mobile[childCount++]));
+        }
+    }
+    if (type == "TV")
+    {
+        for (; count < 18; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(TV[childCount++]));
+        }
+    }
+    if (type == "Toaster")
+    {
+        for (; count < 16; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Toaster[childCount++]));
+        }
+    }
+    if (type == "CoffeeMaker")
+    {
+        for (; count < 15; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(CoffeeMaker[childCount++]));
+        }
+    }
+    if (type == "ElectricKettle")
+    {
+        for (; count < 15; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(ElKettle[childCount++]));
+        }
+    }
+    if (type == "Fridge")
+    {
+        for (; count < 16; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Fridge[childCount++]));
+        }
+    }
+    if (type == "Conditioner")
+    {
+        for (; count < 16; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Conditioner[childCount++]));
+        }
+    }
+    if (type == "Microwave")
+    {
+        for (; count < 17; count++)
+        {
+            m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Microwave[childCount++]));
+        }
+    }
 }
 
 void MainWindow::getColsTable(QString type)
 {
-    char* Tech[] = {"ID", "Type", "Date", "Time", "Day", "Serial Number", " Manufacturer", "Release Date", "Model", "Vendor", "Countrymaker", "Price"};
 
     if (type == "Computer")
     {
@@ -224,16 +430,11 @@ void MainWindow::getColsTable(QString type)
     {
         m_table -> setColumnCount(17);
     }
-
-    for (int i = 0; i < 12; i++)
-    {
-        m_table -> setHorizontalHeaderItem(i, new QTableWidgetItem(Tech[i]));
-    }
 }
 
 void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString string)
 {
-
+    rowChanged.push_back(true);
     switch(result)
     {
         case SendingCodes::FAIL_AUTHENTIFICATION:
@@ -285,6 +486,43 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
             subWindowTypes -> show();
             break;
         }
+        case SendingCodes::ADD_RECORD_SUCCESS:
+        {
+            m_table -> setRowCount(0);
+            SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
+            break;
+        }
+        case SendingCodes::ADD_RECORD_FAIL:
+        {
+            QMessageBox::information(nullptr, "Error", "Can't add record.", QMessageBox::Ok);
+            break;
+        }
+        case SendingCodes::CHANGE_RECORD_FAIL:
+        {
+            QMessageBox::information(nullptr, "Error", "Can't changed records.", QMessageBox::Ok);
+            SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
+            break;
+        }
+        case SendingCodes::DELETE_RECORD_SUCCESS:
+        {
+            QMessageBox::information(nullptr, "Information", "Record deleted", QMessageBox::Ok);
+            m_table -> setRowCount(0);
+            SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
+            break;
+        }
+        case SendingCodes::DELETE_RECORD_FAIL:
+        {
+            m_deleteWidget -> setError("Record not found");
+            subWindowDelete -> show();
+            break;
+        }
+        case SendingCodes::FIND_RECORD_FAIL:
+        {
+            SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
+            m_findWidget -> setError("Record not found");
+            subWindowFind -> show();
+            break;
+        }
         case SendingCodes::GET_RECORDS_SUCCESS:
         {
             uint32_t count = 0;
@@ -294,6 +532,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
             for (int i = 0; i < 12; i++)
             {
                 str = getWord(str, field);
+                std::replace(field.begin(), field.end(), '|', ' ');
                 m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
             }
 
@@ -302,6 +541,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 6; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
@@ -310,6 +550,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 7; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
@@ -318,6 +559,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 6; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
@@ -326,6 +568,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 4; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
@@ -334,6 +577,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 3; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
@@ -342,6 +586,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 3; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
@@ -350,6 +595,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 4; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
@@ -358,6 +604,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 4; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
@@ -366,9 +613,17 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 for (int i = 0; i < 5; i++)
                 {
                     str = getWord(str, field);
+                    std::replace(field.begin(), field.end(), '|', ' ');
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
+            rowChanged[compRecordsCount] = false;
+            break;
+        }
+        case SendingCodes::SORT_RECORDS_SUCCESS:
+        {
+            m_table -> setRowCount(0);
+            SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
             break;
         }
         default: qFatal("Error. Server send wrong data.");

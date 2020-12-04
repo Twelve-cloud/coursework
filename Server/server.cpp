@@ -5,7 +5,7 @@
 #include <cstring>
 #include <iostream>
 
-void getWords(int count, std::string str, ...);
+std::string getWords(int count, std::string str, ...);
 
 MyServer::MyServer(const QString& hostname, uint32_t port, QWidget* parent): QWidget(parent), m_nextBlockSize(0)
 {
@@ -35,36 +35,8 @@ void MyServer::slotNewConnection()
     connect(SClients[sd], SIGNAL(readyRead()), this, SLOT(slotReadClient()));
 }
 
-void MyServer::slotReadClient()  // данные могут идти частями, в этот слот будет заходить всегда при приходе любого количества байт, будь то все данные, либо их часть
+void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString string)
 {
-    QTcpSocket* clientSocket = (QTcpSocket*)sender();
-    uint32_t sd = clientSocket -> socketDescriptor();
-
-    QDataStream in(clientSocket);
-    qint16 choice;
-    QString string;
-
-    while (true)
-    {
-
-        if (!m_nextBlockSize) // по умолчанию 0
-        {
-
-            if (clientSocket -> bytesAvailable() < static_cast<qint64>(sizeof(quint16))) // если пришедших байт, меньше чем размер, то значит данные идут частями и часть еще не дошла
-            {
-                break;
-            }
-            in >> m_nextBlockSize; // это выполняется, если пришедшие байты равны переменной размера, и следовательно данные пришли полностю и можно считать размер следующего блока
-        }
-
-        if (clientSocket -> bytesAvailable() < m_nextBlockSize) // если данные пришли не полностью выходим
-        {
-            break;
-        }
-        in >> choice >> string; // считываем данные
-        m_nextBlockSize = 0;
-    }
-
     switch(choice)
     {
         case SendingCodes::AUTHENTIFICATION:
@@ -127,6 +99,114 @@ void MyServer::slotReadClient()  // данные могут идти частя�
             }
             break;
         }
+        case SendingCodes::ADD_RECORD:
+        {
+            std::map<std::string, Tech*> create_type = {{"Computer", new Computer},{"MobilePhone", new MobilePhone}, {"TV", new TV}, {"Toaster", new Toaster},
+                                                        {"CoffeeMaker", new CoffeMaker}, {"ElectricKettle", new ElKettle}, {"Fridge", new Fridge},
+                                                        {"Conditioner", new Conditioner}, {"Microwave", new Microwawe}};
+            char dbname[64], type[64];
+            uint32_t index = -1;
+            getWords(3, string.toStdString(), dbname, type);
+            if(TECH_BASE -> findDbName(dbname, index))
+            {
+                (*TECH_BASE)[index] -> addObject(create_type[type]->getTypeClass(), 0);
+                (*TECH_BASE)[index] -> rewriteDB();
+            }
+            else
+            {
+                sendToClient(clientSocket, SendingCodes::ADD_RECORD_FAIL, "");
+            }
+            break;
+        }
+        case SendingCodes::DELETE_RECORD:
+        {
+            char dbname[64], type[64], id[64];
+            getWords(4, string.toStdString(), dbname, type, id);
+            uint32_t ID = atoi(id), index = -1;
+            bool isFound = false;
+            if(TECH_BASE -> findDbName(dbname, index))
+            {
+                for (Tech* i : *TECH_BASE -> getDB(index))
+                {
+                    if (i -> getID() == ID && i -> getType() == type)
+                    {
+                        (*TECH_BASE)[index] -> remObject(ID);
+                        sendToClient(clientSocket, SendingCodes::DELETE_RECORD_SUCCESS, "");
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (!isFound)
+                {
+                    sendToClient(clientSocket, SendingCodes::DELETE_RECORD_FAIL, "");
+                }
+            }
+            else
+            {
+                sendToClient(clientSocket, SendingCodes::DELETE_RECORD_FAIL, "");
+            }
+            break;
+        }
+        case SendingCodes::CHANGE_RECORD:
+        {
+            std::map<std::string, Tech*> create_type = {{"Computer", new Computer},{"MobilePhone", new MobilePhone}, {"TV", new TV}, {"Toaster", new Toaster},
+                                                        {"CoffeeMaker", new CoffeMaker}, {"ElectricKettle", new ElKettle}, {"Fridge", new Fridge},
+                                                        {"Conditioner", new Conditioner}, {"Microwave", new Microwawe}};
+            char dbname[64], type[64], id[64];
+            std::string stringToReplace = getWords(4, string.toStdString(), dbname, type, id);
+            uint32_t ID = atoi(id), index = -1;
+            if(TECH_BASE -> findDbName(dbname, index))
+            {
+                for (Tech* i : *TECH_BASE -> getDB(index))
+                {
+                    if (i -> getID() == ID && i -> getType() == type)
+                    {
+                        if (!(i -> replaceObject(stringToReplace)))
+                        {
+                            sendToClient(clientSocket, SendingCodes::CHANGE_RECORD_FAIL, "");
+                            break;
+                        }
+                    }
+                }
+                TECH_BASE -> getDB(index) -> rewriteDB();
+            }
+            else
+            {
+                sendToClient(clientSocket, SendingCodes::CHANGE_RECORD_FAIL, "");
+            }
+            break;
+        }
+        case SendingCodes::FIND_RECORD:
+        {
+            char dbname[64], type[64], id[64];
+            std::string stringToSend;
+            getWords(4, string.toStdString(), dbname, type, id);
+            uint32_t ID = atoi(id), index = -1;
+            bool isFound = false;
+            if(TECH_BASE -> findDbName(dbname, index))
+            {
+                for (Tech* i : *TECH_BASE -> getDB(index))
+                {
+                    if (i -> getID() == ID && i -> getType() == type)
+                    {
+                        i -> getStringToSend(stringToSend);
+                        sendToClient(clientSocket, SendingCodes::GET_RECORDS_SUCCESS, QString().fromStdString(stringToSend));
+                        stringToSend.clear();
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (!isFound)
+                {
+                    sendToClient(clientSocket, SendingCodes::FIND_RECORD_FAIL, "");
+                }
+            }
+            else
+            {
+                sendToClient(clientSocket, SendingCodes::FIND_RECORD_FAIL, "");
+            }
+            break;
+        }
         case SendingCodes::GET_RECORDS:
         {
             char type[64], dbname[64];
@@ -147,7 +227,52 @@ void MyServer::slotReadClient()  // данные могут идти частя�
             }
             break;
         }
-        default: qFatal("Error. Client send wrong data.");
+        case SendingCodes::SORT_RECORDS:
+        {
+            char type[64], dbname[64];
+            uint32_t index = -1;
+            std::string stringToSend;
+            getWords(3, string.toStdString(), type, dbname);
+            if (TECH_BASE -> findDbName(dbname, index))
+            {
+                (*TECH_BASE)[index] ->sort();
+                sendToClient(clientSocket, SendingCodes::SORT_RECORDS_SUCCESS, "");
+            }
+            break;
+        }
+        default: qDebug("Error. Client send wrong data.");
+    }
+}
+
+void MyServer::slotReadClient()  // данные могут идти частями, в этот слот будет заходить всегда при приходе любого количества байт, будь то все данные, либо их часть
+{
+    QTcpSocket* clientSocket = (QTcpSocket*)sender();
+    uint32_t sd = clientSocket -> socketDescriptor();
+
+    QDataStream in(clientSocket);
+    qint16 choice;
+    QString string;
+
+    while (true)
+    {
+
+        if (!m_nextBlockSize) // по умолчанию 0
+        {
+
+            if (clientSocket -> bytesAvailable() < static_cast<qint64>(sizeof(quint16))) // если пришедших байт, меньше чем размер, то значит данные идут частями и часть еще не дошла
+            {
+                break;
+            }
+            in >> m_nextBlockSize; // это выполняется, если пришедшие байты равны переменной размера, и следовательно данные пришли полностю и можно считать размер следующего блока
+        }
+
+        if (clientSocket -> bytesAvailable() < m_nextBlockSize) // если данные пришли не полностью выходим
+        {
+            break;
+        }
+        in >> choice >> string; // считываем данные
+        handleRequest(clientSocket, choice, string);
+        m_nextBlockSize = 0;
     }
 
     SClients.remove(sd);

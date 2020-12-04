@@ -6,6 +6,8 @@
 #include "createdb_window.h"
 #include "type_window.h"
 #include "action_window.h"
+#include "delete_widget.h"
+#include "find_widget.h"
 #include "incryption.h"
 #include "constants.h"
 #include <QTcpSocket>
@@ -22,6 +24,7 @@ public:
     void SendToServer(qint16 choice, QString string);
     void handleResult(uint32_t compRecordsCount, qint16 result, QString string);
     void getColsTable(QString type);
+    void getHeaders(QString type);
     void display();
 
 private slots:
@@ -36,9 +39,20 @@ private slots:
     void connectDB();
     void exit();
     void slot_menu_actions_call();
+    void slot_sort();
+    void slot_deleteOkClicked();
+    void slot_deleteCancelClicked();
+    void slot_deleteRecordClicked();
+    void slot_findOkClicked();
+    void slot_findCancelClicked();
+    void slot_findRecordClicked();
+    void slot_addRecordClicked();
+    void slot_changeRecordClicked();
+    void slot_cellChanged(int row, int col);
 
 private:
-    enum MAX_MENUS {
+    enum MAX_MENUS
+    {
         FILE,
         EDIT,
         WINDOW,
@@ -55,8 +69,14 @@ private:
     QMdiSubWindow* subWindowTypes;
     QMdiSubWindow* subWindowActions;
     QMdiSubWindow* subWindowTable;
+    QMdiSubWindow* subWindowDelete;
+    QMdiSubWindow* subWindowFind;
+
+    DeleteWidget* m_deleteWidget;
+    FindWidget* m_findWidget;
 
     QMenu* m_menu[MAX_MENUS];
+    std::vector<bool> rowChanged;
     QAction* full_screen;
     AuthWindow m_auth;
     RegiWindow m_regi;

@@ -30,6 +30,8 @@ SOURCES += \
         action_window.cpp \
         auth_window.cpp \
         createdb_window.cpp \
+        delete_widget.cpp \
+        find_widget.cpp \
         incryption.cpp \
         main.cpp \
         mainwindow.cpp \
@@ -42,6 +44,8 @@ HEADERS += \
         auth_window.h \
         constants.h \
         createdb_window.h \
+        delete_widget.h \
+        find_widget.h \
         incryption.h \
         mainwindow.h \
         regi_window.h \
@@ -51,6 +55,8 @@ FORMS += \
         action_window.ui \
         auth_window.ui \
         createdb_window.ui \
+        delete_widget.ui \
+        find_widget.ui \
         mainwindow.ui \
         output_menu.ui \
         regi_window.ui \

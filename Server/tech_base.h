@@ -22,6 +22,7 @@ public:
     /* Функции для работы непосредственно с файлом: чтение из файла, перезапись файла, получение имени файла и задание имени файла */
 
     void addObject(Tech* object);
+    void addObject(Tech* object, int);
     void remObject(const std::uint32_t& ID);
     void changeObject(const std::uint32_t& ID);
     void filltration(const std::string& data);

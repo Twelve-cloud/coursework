@@ -12,8 +12,6 @@ ActionWindow::ActionWindow(QWidget *parent) : QWidget(parent)
     m_deleteRecord -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_changeRecord = new QPushButton("Change record");
     m_changeRecord -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_printRecords = new QPushButton("Print records");
-    m_printRecords -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_findRecord   = new QPushButton("Find record");
     m_findRecord   -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_sortRecords  = new QPushButton("Sort records");
@@ -24,9 +22,39 @@ ActionWindow::ActionWindow(QWidget *parent) : QWidget(parent)
     vbox -> addWidget(m_addRecord);
     vbox -> addWidget(m_deleteRecord);
     vbox -> addWidget(m_changeRecord);
-    vbox -> addWidget(m_printRecords);
     vbox -> addWidget(m_findRecord);
     vbox -> addWidget(m_sortRecords);
 
+    connect(m_addRecord, SIGNAL(clicked()), this, SLOT(add_recordButton_clicked()));
+    connect(m_deleteRecord, SIGNAL(clicked()), this, SLOT(delete_recordButton_clicked()));
+    connect(m_changeRecord, SIGNAL(clicked()), this, SLOT(change_recordButton_clicked()));
+    connect(m_findRecord, SIGNAL(clicked()), this, SLOT(find_recordButton_clicked()));
+    connect(m_sortRecords, SIGNAL(clicked()), this, SLOT(sort_recordsButton_clicked()));
+
     setLayout(vbox);
+}
+
+void ActionWindow::add_recordButton_clicked()
+{
+    emit add_record_clicked();
+}
+
+void ActionWindow::delete_recordButton_clicked()
+{
+    emit delete_record_clicked();
+}
+
+void ActionWindow::change_recordButton_clicked()
+{
+    emit change_record_clicked();
+}
+
+void ActionWindow::find_recordButton_clicked()
+{
+    emit find_record_clicked();
+}
+
+void ActionWindow::sort_recordsButton_clicked()
+{
+    emit sort_records_clicked();
 }

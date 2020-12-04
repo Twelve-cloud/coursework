@@ -46,6 +46,12 @@ void CreateDB_Window::Ok_clicked()
 {
     bool isWrong = false;
 
+    if (m_dbName.isEmpty() || m_dbPass.isEmpty())
+    {
+        setError("Fill fields");
+        return;
+    }
+
     if(m_okBtn ->text() == "Create")
     {
         for (const auto& ch : m_dbName)

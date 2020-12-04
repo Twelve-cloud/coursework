@@ -8,6 +8,7 @@
 #include <ctime>
 
 extern StreamTable kt;
+std::string getWords(int count, std::string str, ...);
 
 // Статические элементы класса
 
@@ -32,6 +33,7 @@ std::string Tech::setCurrentDate()
 std::istream& Tech::setState(std::istream& in)
 {
     m_recordtime = setCurrentDate();
+    m_recordtime.erase(m_recordtime.find(","), 1);
     std::cout << "Enter serial number: ";       std::getline(std::cin, m_serialnumber);
     std::cout << "Enter manufacturer: ";        std::getline(std::cin, m_manufacturer);
     std::cout << "Enter release date: ";        std::getline(std::cin, m_releasedate);
@@ -76,24 +78,52 @@ void Tech::writeToFile(std::fstream& file)
 void Tech::readFile(std::fstream& file, Tech* obj)
 {
     std::getline(file, obj -> getRecordTime());
-    file >> obj -> getSerialNumber();
-    file >> obj -> getManufacturer();
-    file >> obj -> getReleaseData();
-    file >> obj -> getModel();
-    file >> obj -> getVendor();
-    file >> obj -> getCountrymaker();
+    std::getline(file, obj -> getSerialNumber());
+    std::getline(file, obj -> getManufacturer());
+    std::getline(file, obj -> getReleaseData());
+    std::getline(file, obj -> getModel());
+    std::getline(file, obj -> getVendor());
+    std::getline(file, obj -> getCountrymaker());
     file >> obj -> getPrice();
 }
 
 void Tech::getStringToSend(std::string& stringToSend)
 {
     std::stringstream temp;
+
+    std::replace(m_serialnumber.begin(), m_serialnumber.end(), ' ', '|');
+    std::replace(m_manufacturer.begin(), m_manufacturer.end(), ' ', '|');
+    std::replace(m_releasedate.begin(), m_releasedate.end(), ' ', '|');
+    std::replace(m_model.begin(), m_model.end(), ' ', '|');
+    std::replace(m_vendor.begin(), m_vendor.end(), ' ', '|');
+    std::replace(m_countrymaker.begin(), m_countrymaker.end(), ' ', '|');
+
     temp << m_ID << " " << m_type << " "
          << m_recordtime << " " << m_serialnumber << " "
          << m_manufacturer << " " << m_releasedate << " "
          << m_model << " " << m_vendor << " "
          << m_countrymaker << " " << m_price << " ";
     stringToSend = temp.str();
+}
+
+bool Tech::replaceObject(std::string& string)
+{
+    char serialnumber[64], manufacturer[64], releasedate[64], model[64], vendor[64], countrymaker[64], price[64];
+    string = getWords(8, string, serialnumber, manufacturer, releasedate, model, vendor,countrymaker, price);
+    if (atoi(price) == 0)
+        return false;
+
+    m_recordtime = setCurrentDate();
+    m_recordtime.erase(m_recordtime.find(","), 1);
+
+    m_serialnumber = serialnumber;
+    m_manufacturer = manufacturer;
+    m_releasedate = releasedate;
+    m_model = model;
+    m_vendor = vendor;
+    m_countrymaker = countrymaker;
+    m_price = atoi(price);
+    return true;
 }
 // !Виртуальные функции класса
 
@@ -148,10 +178,10 @@ void Computer::writeToFile(std::fstream& file)
     Tech::writeToFile(file);
 
     file << m_processor << std::endl;
-    file << m_core << std::endl;
     file << m_ramtype << std::endl;
-    file << m_ramsize << std::endl;
     file << m_screenresol << std::endl;
+    file << m_ramsize << std::endl;
+    file << m_core << std::endl;
     file << m_screendiagonal << std::endl;
 }
 
@@ -159,9 +189,10 @@ void Computer::readFile(std::fstream& file, Tech* obj)
 {
     Tech::readFile(file, obj);
 
-    file >> dynamic_cast<Computer*>(obj) -> getProcessor();
-    file >> dynamic_cast<Computer*>(obj) -> getRamtype();
-    file >> dynamic_cast<Computer*>(obj) -> getScreenResol();
+    std::getline(file, dynamic_cast<Computer*>(obj) -> getProcessor());
+    std::getline(file, dynamic_cast<Computer*>(obj) -> getProcessor());
+    std::getline(file, dynamic_cast<Computer*>(obj) -> getRamtype());
+    std::getline(file, dynamic_cast<Computer*>(obj) -> getScreenResol());
     file >> dynamic_cast<Computer*>(obj) -> getRamSize();
     file >> dynamic_cast<Computer*>(obj) -> getCore();
     file >> dynamic_cast<Computer*>(obj) -> getScreenDiagonal();
@@ -171,9 +202,35 @@ void Computer::getStringToSend(std::string& stringToSend)
 {
     Tech::getStringToSend(stringToSend);
     std::stringstream temp;
+
+    std::replace(m_processor.begin(), m_processor.end(), ' ', '|');
+    std::replace(m_ramtype.begin(), m_ramtype.end(), ' ', '|');
+    std::replace(m_screenresol.begin(), m_screenresol.end(), ' ', '|');
+
     temp << m_processor << " " << m_core << " " << m_ramtype << " " << m_ramsize << " " << m_screenresol << " " << m_screendiagonal;
     stringToSend += temp.str();
 
+}
+
+bool Computer::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char processor[64], core[64], ramtype[64], ramsize[64], screenresol[64], screendiag[64];
+    string = getWords(7, string, processor, core, ramtype, ramsize, screenresol, screendiag);
+
+    if (atoi(core) && atoi(ramsize) && atoi(screendiag) == 0)
+        return false;
+
+    m_processor = processor;
+    m_ramtype = ramtype;
+    m_screenresol = screenresol;
+    m_core = atoi(core);
+    m_ramsize = atoi(ramsize);
+    m_screendiagonal = atoi(screendiag);
+
+    return true;
 }
 
 std::istream& MobilePhone::setState(std::istream& in)
@@ -226,10 +283,12 @@ void MobilePhone::readFile(std::fstream& file, Tech* obj)
 {
     Tech::readFile(file, obj);
 
-    file >> dynamic_cast<MobilePhone*>(obj) -> getOS();
-    file >> dynamic_cast<MobilePhone*>(obj) -> getScreenResol();
+    std::getline(file, dynamic_cast<MobilePhone*>(obj) -> getOS());
+    std::getline(file, dynamic_cast<MobilePhone*>(obj) -> getOS());
+    std::getline(file, dynamic_cast<MobilePhone*>(obj) -> getScreenResol());
     file >> dynamic_cast<MobilePhone*>(obj) -> getScreenDiagonal();
-    file >> dynamic_cast<MobilePhone*>(obj) -> getProcessor();
+    std::getline(file, dynamic_cast<MobilePhone*>(obj) -> getProcessor());
+    std::getline(file, dynamic_cast<MobilePhone*>(obj) -> getProcessor());
     file >> dynamic_cast<MobilePhone*>(obj) -> getCore();
     file >> dynamic_cast<MobilePhone*>(obj) -> getRamSize();
     file >> dynamic_cast<MobilePhone*>(obj) -> getSimCount();
@@ -239,8 +298,36 @@ void MobilePhone::getStringToSend(std::string& stringToSend)
 {
     Tech::getStringToSend(stringToSend);
     std::stringstream temp;
+
+    std::replace(m_os.begin(), m_os.end(), ' ', '|');
+    std::replace(m_screenresol.begin(), m_screenresol.end(), ' ', '|');
+    std::replace(m_processor.begin(), m_processor.end(), ' ', '|');
+
     temp << m_os << " " << m_screenresol << " " << m_screendiagonal << " " << m_processor << " " << m_core << " " << m_ramsize << " " << m_simcount;
     stringToSend += temp.str();
+}
+
+bool MobilePhone::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char os[64], screenresol[64], processor[64], core[64], ramsize[64], screendiag[64], simcount[64];
+    string = getWords(8, string, os, screenresol, screendiag, processor, core, ramsize, simcount);
+
+    if (atoi(core) && atoi(ramsize) && atoi(screendiag) && atoi(simcount) == 0)
+        return false;
+
+
+    m_os = os;
+    m_processor = processor;
+    m_screenresol = screenresol;
+    m_core = atoi(core);
+    m_ramsize = atoi(ramsize);
+    m_screendiagonal = atoi(screendiag);
+    m_simcount = atoi(simcount);
+
+    return true;
 }
 
 std::istream& TV::setState(std::istream& in)
@@ -291,10 +378,12 @@ void TV::readFile(std::fstream& file, Tech* obj)
 {
     Tech::readFile(file, obj);
 
-    file >> dynamic_cast<TV*>(obj) -> getTypescreen();
-    file >> dynamic_cast<TV*>(obj) -> getScreenResol();
+    std::getline(file, dynamic_cast<TV*>(obj) -> getTypescreen());
+    std::getline(file, dynamic_cast<TV*>(obj) -> getTypescreen());
+    std::getline(file, dynamic_cast<TV*>(obj) -> getScreenResol());
     file >> dynamic_cast<TV*>(obj) -> getScreenDiagonal();
-    file >> dynamic_cast<TV*>(obj) -> getProcessor();
+    std::getline(file, dynamic_cast<TV*>(obj) -> getProcessor());
+    std::getline(file, dynamic_cast<TV*>(obj) -> getProcessor());
     file >> dynamic_cast<TV*>(obj) -> getCore();
     file >> dynamic_cast<TV*>(obj) -> get3DMode();
 }
@@ -303,8 +392,29 @@ void TV::getStringToSend(std::string& stringToSend)
 {
     Tech::getStringToSend(stringToSend);
     std::stringstream temp;
+
+    std::replace(m_typescreen.begin(), m_typescreen.end(), ' ', '|');
+    std::replace(m_screenresolution.begin(), m_screenresolution.end(), ' ', '|');
+    std::replace(m_processor.begin(), m_processor.end(), ' ', '|');
+
     temp << m_typescreen << " " << m_screenresolution << " " << m_screendiagonal << " " << m_processor << " " << m_core << " " << m_3Dmode;
     stringToSend += temp.str();
+}
+
+bool TV::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char core[64], _3Dmode[64];
+    getWords(6, string, m_typescreen.c_str(), m_screenresolution.c_str(), m_processor.c_str(), core, _3Dmode);
+
+    if (atoi(core))
+        return false;
+    m_core = atoi(core);
+    m_3Dmode = atoi(_3Dmode);
+
+    return true;
 }
 
 std::istream& Toaster::setState(std::istream& in)
@@ -357,8 +467,28 @@ void Toaster::getStringToSend(std::string& stringToSend)
 {
     Tech::getStringToSend(stringToSend);
     std::stringstream temp;
+
     temp << m_toastcount << " " << m_power << " " << m_defrostring << " " << m_heating;
     stringToSend += temp.str();
+}
+
+bool Toaster::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char toastcount[64], power[64], defrosting[64], heating[64];
+    getWords(5, string, toastcount, power, defrosting, heating);
+
+    if (atoi(toastcount) && atoi(power) == 0)
+        return false;
+
+    m_toastcount = atoi(toastcount);
+    m_power = atoi(power);
+    m_defrostring = atoi(defrosting);
+    m_heating = atoi(heating);
+
+    return true;
 }
 
 std::istream& CoffeMaker::setState(std::istream& in)
@@ -410,6 +540,24 @@ void CoffeMaker::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
+bool CoffeMaker::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char power[64], pressure[64], cappuchinomaker[64];
+    getWords(4, string, power, pressure, cappuchinomaker);
+
+    if (atoi(power) && atoi(pressure) == 0)
+        return false;
+
+    m_power = atoi(power);
+    m_pressure = atoi(pressure);
+    m_cappuccinomaker = atoi(cappuchinomaker);
+
+    return true;
+}
+
 std::istream& ElKettle::setState(std::istream& in)
 {
     Tech::setState(in);
@@ -457,6 +605,24 @@ void ElKettle::getStringToSend(std::string& stringToSend)
     std::stringstream temp;
     temp << m_power << " " << m_volume << " " << m_timer;
     stringToSend += temp.str();
+}
+
+bool ElKettle::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char power[64], volume[64], timer[64];
+    getWords(4, string, power, volume, timer);
+
+    if (atoi(power) && atoi(volume) == 0)
+        return false;
+
+    m_power = atoi(power);
+    m_volume = atoi(volume);
+    m_timer = atoi(timer);
+
+    return true;
 }
 
 std::istream& Fridge::setState(std::istream& in)
@@ -512,6 +678,25 @@ void Fridge::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
+bool Fridge::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char volume[64], shelfcount[64], noiselvl[64], multizone[64];
+    getWords(5, string, volume, shelfcount, noiselvl, multizone);
+
+    if (atoi(volume) && atoi(shelfcount) && atoi(noiselvl) == 0)
+        return false;
+
+    m_volume = atoi(volume);
+    m_shelfcount = atoi(shelfcount);
+    m_noiselvl = atoi(noiselvl);
+    m_multizone = atoi(multizone);
+
+    return true;
+}
+
 std::istream& Conditioner::setState(std::istream& in)
 {
     Tech::setState(in);
@@ -552,7 +737,8 @@ void Conditioner::readFile(std::fstream& file, Tech* obj)
 {
     Tech::readFile(file, obj);
 
-    file >> dynamic_cast<Conditioner*>(obj) -> getWorkmode();
+    std::getline(file, dynamic_cast<Conditioner*>(obj) -> getWorkmode());
+    std::getline(file, dynamic_cast<Conditioner*>(obj) -> getWorkmode());
     file >> dynamic_cast<Conditioner*>(obj) -> getCoolingPower();
     file >> dynamic_cast<Conditioner*>(obj) -> getHeathingPower();
     file >> dynamic_cast<Conditioner*>(obj) -> getRemouteControl();
@@ -562,9 +748,31 @@ void Conditioner::getStringToSend(std::string& stringToSend)
 {
     Tech::getStringToSend(stringToSend);
     std::stringstream temp;
+
+    std::replace(m_workmode.begin(), m_workmode.end(), ' ', '|');
+
     temp << m_workmode << " " << m_coolingpower << " " << m_heatingpower << " " << m_remotecontol;
     stringToSend += temp.str();
 
+}
+
+bool Conditioner::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char workmode[64], coolingpower[64], heatingpower[64], remotecontol[64];
+    getWords(5, string, workmode, coolingpower, heatingpower, remotecontol);
+
+    if (atoi(coolingpower) && atoi(heatingpower) == 0)
+        return false;
+
+    m_workmode = workmode;
+    m_coolingpower = atoi(coolingpower);
+    m_heatingpower = atoi(heatingpower);
+    m_remotecontol = atoi(remotecontol);
+
+    return true;
 }
 
 std::istream& Microwawe::setState(std::istream& in)
@@ -584,7 +792,6 @@ std::istream& Microwawe::setState(std::istream& in)
 std::ostream& Microwawe::print(std::ostream& out) const
 {
     Tech::print(out);
-
     std::cout << std::boolalpha;
     kt << "Power" << m_power;
     kt << "Lvls of power" << m_lvlpower_count;
@@ -623,6 +830,26 @@ void Microwawe::getStringToSend(std::string& stringToSend)
     std::stringstream temp;
     temp << m_power << " " << m_lvlpower_count << " " << m_volume << " " << m_quickstart << " " << m_timer;
     stringToSend += temp.str();
+}
+
+bool Microwawe::replaceObject(std::string& string)
+{
+    if (Tech::replaceObject(string) == false)
+        return false;
+
+    char power[64], lvlpower_count[64], volume[64], quickstart[64], timer[64];
+    getWords(6, string, power, lvlpower_count, volume, quickstart, timer);
+
+    if (atoi(power) && atoi(lvlpower_count) && atoi(volume) == 0)
+        return false;
+
+    m_power = atoi(power);
+    m_lvlpower_count = atoi(lvlpower_count);
+    m_volume = atoi(volume);
+    m_quickstart = atoi(quickstart);
+    m_timer = atoi(timer);
+
+    return true;
 }
 
 // !Методы дочерних классов

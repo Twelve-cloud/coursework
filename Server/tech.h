@@ -13,6 +13,7 @@ class Tech
 {
 public:
     Tech(const std::string& type) : m_type(type) { m_ID = ++count; }
+    Tech(const std::string& type, int);
     virtual ~Tech() = 0;
 
     uint32_t& getID() { return m_ID; }
@@ -33,6 +34,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj);
     virtual void writeToFile(std::fstream& file);
     virtual void getStringToSend(std::string& stringToSend);
+    virtual bool replaceObject(std::string& string);
 
     static std::string setCurrentDate();
 
@@ -46,14 +48,14 @@ private:
     std::string m_type;
     std::string m_recordtime;
     // Свойства, приобретаемые при создании продукта на заводе
-    std::string m_serialnumber;
-    std::string m_manufacturer;
-    std::string m_releasedate;
-    std::string m_model;
+    std::string m_serialnumber = "-";
+    std::string m_manufacturer = "-";
+    std::string m_releasedate = "-";
+    std::string m_model = "-";
     // Свойства, которые назначаются в магазине
-    std::string m_vendor;
-    std::string m_countrymaker;
-    uint32_t m_price;
+    std::string m_vendor = "-";
+    std::string m_countrymaker = "-";
+    uint32_t m_price = 1;
 };
 
 // !Определение базового абстрактного класса
@@ -79,14 +81,15 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    std::string m_processor;
-    std::string m_ramtype;
-    std::string m_screenresol;
-    uint32_t m_ramsize;
-    uint32_t m_core;
-    double m_screendiagonal;
+    std::string m_processor = "-";
+    std::string m_ramtype = "-";
+    std::string m_screenresol = "-";
+    uint32_t m_ramsize = 1;
+    uint32_t m_core = 1;
+    double m_screendiagonal = 1;
 };
 
 class MobilePhone final: public Tech
@@ -109,15 +112,16 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    std::string m_os;
-    std::string m_screenresol;
-    std::string m_processor;
-    uint32_t m_core;
-    uint32_t m_ramsize;
-    uint32_t m_simcount;
-    double m_screendiagonal;
+    std::string m_os = "-";
+    std::string m_screenresol = "-";
+    std::string m_processor = "-";
+    uint32_t m_core = 1;
+    uint32_t m_ramsize = 1;
+    uint32_t m_simcount = 1;
+    double m_screendiagonal = 1;
 };
 
 class TV final: public Tech
@@ -139,14 +143,15 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    std::string m_typescreen;
-    std::string m_screenresolution;
-    std::string m_processor;
-    uint32_t m_core;
-    double m_screendiagonal;
-    bool m_3Dmode;
+    std::string m_typescreen = "-";
+    std::string m_screenresolution = "-";
+    std::string m_processor = "-";
+    uint32_t m_core = 1;
+    double m_screendiagonal = 1;
+    bool m_3Dmode = false;
 };
 
 class Toaster final: public Tech
@@ -166,12 +171,13 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    uint32_t m_toastcount;
-    uint32_t m_power;
-    bool m_defrostring;
-    bool m_heating;
+    uint32_t m_toastcount = 1;
+    uint32_t m_power = 1;
+    bool m_defrostring = false;
+    bool m_heating = false;
 };
 
 class CoffeMaker final: public Tech
@@ -190,11 +196,12 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    uint32_t m_power;
-    uint32_t m_pressure;
-    bool m_cappuccinomaker;
+    uint32_t m_power = 1;
+    uint32_t m_pressure = 1;
+    bool m_cappuccinomaker = false;
 };
 
 class ElKettle final: public Tech
@@ -213,11 +220,12 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    uint32_t m_power;
-    uint32_t m_volume;
-    bool m_timer;
+    uint32_t m_power = 1;
+    uint32_t m_volume = 1;
+    bool m_timer = false;
 };
 
 class Fridge final: public Tech
@@ -237,12 +245,13 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    uint32_t m_volume;
-    uint32_t m_shelfcount;
-    uint32_t m_noiselvl;
-    bool m_multizone;
+    uint32_t m_volume = 1;
+    uint32_t m_shelfcount = 1;
+    uint32_t m_noiselvl = 1;
+    bool m_multizone = false;
 };
 
 class Conditioner final: public Tech
@@ -262,12 +271,13 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    std::string m_workmode;
-    uint32_t m_coolingpower;
-    uint32_t m_heatingpower;
-    bool m_remotecontol;
+    std::string m_workmode = "";
+    uint32_t m_coolingpower = 1;
+    uint32_t m_heatingpower = 1;
+    bool m_remotecontol = false;
 };
 
 class Microwawe final: public Tech
@@ -288,13 +298,14 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
+    virtual bool replaceObject(std::string& string) override final;
 
 private:
-    uint32_t m_power;
-    uint32_t m_lvlpower_count;
-    uint32_t m_volume;
-    bool m_quickstart;
-    bool m_timer;
+    uint32_t m_power = 1;
+    uint32_t m_lvlpower_count = 1;
+    uint32_t m_volume = 1;
+    bool m_quickstart = false;
+    bool m_timer = false;
 };
 
 // !Определение дочерних классов

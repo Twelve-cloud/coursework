@@ -22,15 +22,14 @@ signals:
     void sort_records_clicked();
 
 private slots:
-    //void add_recordButton_clicked();
-    //void delete_recordButton_clicked();
-    //void change_recordButton_clicked();
-    //void print_all_recordsButton_clicked();
-    //void find_recordButton_clicked();
-    //void sort_recordsButton_clicked();
+    void add_recordButton_clicked();
+    void delete_recordButton_clicked();
+    void change_recordButton_clicked();
+    void find_recordButton_clicked();
+    void sort_recordsButton_clicked();
 
 private:
-    QPushButton *m_addRecord, *m_deleteRecord, *m_changeRecord, *m_printRecords, *m_findRecord, *m_sortRecords;
+    QPushButton *m_addRecord, *m_deleteRecord, *m_changeRecord, *m_findRecord, *m_sortRecords;
 };
 
 #endif // ACTION_WINDOW_H

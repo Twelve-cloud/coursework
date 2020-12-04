@@ -8,14 +8,22 @@
 
 extern StreamTable kt;
 
-bool compare(const Tech* obj1, const Tech* obj2) // функция для сортировки
+bool compare(Tech* obj1, Tech* obj2) // функция для сортировки
 {
-    return obj1 -> getType() < obj2 -> getType();
+    return obj1 -> getPrice() < obj2 -> getPrice();
 }
 
 void TechBase::addObject(Tech* object)
 {
     std::cin >> *object;
+    push_back(object);
+    std::cout << "Record successfully added." << std::endl;
+}
+
+void TechBase::addObject(Tech* object, int)
+{
+    object -> getRecordTime() = object -> setCurrentDate();
+    object -> getRecordTime().erase(object -> getRecordTime().find(","), 1);
     push_back(object);
     std::cout << "Record successfully added." << std::endl;
 }

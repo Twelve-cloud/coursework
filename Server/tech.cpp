@@ -9,6 +9,7 @@
 
 extern StreamTable kt;
 std::string getWords(int count, std::string str, ...);
+#define NRus(str) QString::fromLocal8Bit(str).toUtf8().data()
 
 // Статические элементы класса
 
@@ -34,29 +35,29 @@ std::istream& Tech::setState(std::istream& in)
 {
     m_recordtime = setCurrentDate();
     m_recordtime.erase(m_recordtime.find(","), 1);
-    std::cout << "Enter serial number: ";       std::getline(std::cin, m_serialnumber);
-    std::cout << "Enter manufacturer: ";        std::getline(std::cin, m_manufacturer);
-    std::cout << "Enter release date: ";        std::getline(std::cin, m_releasedate);
-    std::cout << "Enter model: ";               std::getline(std::cin, m_model);
-    std::cout << "Enter vendor code: ";         std::getline(std::cin, m_vendor);
-    std::cout << "Enter country of making: ";   std::getline(std::cin, m_countrymaker);
-    getnumber(m_price, "Enter price: ");
+    std::cout << Rus("Введите серийный нормер: ");       std::getline(std::cin, m_serialnumber);
+    std::cout << Rus("Введите производителя: ");         std::getline(std::cin, m_manufacturer);
+    std::cout << Rus("Введите дату поступления: ");      std::getline(std::cin, m_releasedate);
+    std::cout << Rus("Введите модель: ");                std::getline(std::cin, m_model);
+    std::cout << Rus("Введите артикул: ");               std::getline(std::cin, m_vendor);
+    std::cout << Rus("Введите страну изготовления: ");   std::getline(std::cin, m_countrymaker);
+    getnumber(m_price, Rus("Введите цену: "));
 
     return in;
 }
 
 std::ostream& Tech::print(std::ostream& out) const
 {
-    kt << "ID"  << m_ID;
-    kt << "Type" << m_type;
-    kt << "Record time" << m_recordtime;
-    kt << "Serial Number" << m_serialnumber;
-    kt << "Manufacturer" << m_manufacturer;
-    kt << "Release date" << m_releasedate;
-    kt << "Model" << m_model;
-    kt << "Vendor code" << m_vendor;
-    kt << "Country maker" << m_countrymaker;
-    kt << "Price" << m_price;
+    kt << Rus("ИД")  << m_ID;
+    kt << Rus("Тип") << Rus(m_type.c_str());
+    kt << Rus("Время записи") << m_recordtime;
+    kt << Rus("Серийный номер") << m_serialnumber;
+    kt << Rus("Производитель") << m_manufacturer;
+    kt << Rus("Дата поступления") << m_releasedate;
+    kt << Rus("Модель") << m_model;
+    kt << Rus("Артикул") << m_vendor;
+    kt << Rus("Страна производства") << m_countrymaker;
+    kt << Rus("Цена") << m_price;
 
     return out;
 }
@@ -99,10 +100,10 @@ void Tech::getStringToSend(std::string& stringToSend)
     std::replace(m_countrymaker.begin(), m_countrymaker.end(), ' ', '|');
 
     temp << m_ID << " " << m_type << " "
-         << m_recordtime << " " << m_serialnumber << " "
-         << m_manufacturer << " " << m_releasedate << " "
-         << m_model << " " << m_vendor << " "
-         << m_countrymaker << " " << m_price << " ";
+         << NRus(m_recordtime.c_str()) << " " << NRus(m_serialnumber.c_str()) << " "
+         << NRus(m_manufacturer.c_str()) << " " << NRus(m_releasedate.c_str()) << " "
+         << NRus(m_model.c_str()) << " " << NRus(m_vendor.c_str()) << " "
+         << NRus(m_countrymaker.c_str()) << " " << m_price << " ";
     stringToSend = temp.str();
 }
 
@@ -110,10 +111,12 @@ bool Tech::replaceObject(std::string& string)
 {
     char serialnumber[64], manufacturer[64], releasedate[64], model[64], vendor[64], countrymaker[64], price[64];
     string = getWords(8, string, serialnumber, manufacturer, releasedate, model, vendor,countrymaker, price);
-    if (atoi(price) == 0)
-        return false;
 
-    m_recordtime = setCurrentDate();
+    int32_t tmp = (atoi(price));
+    if (tmp < 0) tmp = 0;
+    m_price = tmp;
+
+    m_recordtime = setCurrentDate().c_str();
     m_recordtime.erase(m_recordtime.find(","), 1);
 
     m_serialnumber = serialnumber;
@@ -122,7 +125,6 @@ bool Tech::replaceObject(std::string& string)
     m_model = model;
     m_vendor = vendor;
     m_countrymaker = countrymaker;
-    m_price = atoi(price);
     return true;
 }
 // !Виртуальные функции класса
@@ -147,15 +149,15 @@ std::istream& operator>>(std::istream& in, Tech& object)
 std::istream& Computer::setState(std::istream& in)
 {
     Tech::setState(in);
-    std::cout << "Enter name of processor: ";
+    std::cout << Rus("Введите модель процессора: ");
     std::getline(std::cin, m_processor);
-    getnumber(m_core, "Enter amount of cores: ");
-    std::cout << "Enter RAM type: ";
+    getnumber(m_core, Rus("Введите количество ядер: "));
+    std::cout << Rus("Введите тип ОП: ");
     std::getline(std::cin, m_ramtype);
-    getnumber(m_ramsize, "Enter size of RAM: ");
-    std::cout << "Enter resolution of screen: ";
+    getnumber(m_ramsize, Rus("Введите размер ОП: "));
+    std::cout << Rus("Введите разрешение экрана: ");
     std::getline(std::cin, m_screenresol);
-    getnumber(m_screendiagonal, "Enter screen diagonal: ");
+    getnumber(m_screendiagonal, Rus("Введите диагональ экрана: "));
 
     return in;
 }
@@ -163,12 +165,12 @@ std::istream& Computer::setState(std::istream& in)
 std::ostream& Computer::print(std::ostream& out) const
 {
     Tech::print(out);
-    kt << "Processor" << m_processor;
-    kt << "Cores" << m_core;
-    kt << "Type of RAM" << m_ramtype;
-    kt << "RAM size" << m_ramsize;
-    kt << "Resolution of the screen" << m_screenresol;
-    kt << "Diagonal of the screen" << m_screendiagonal;
+    kt << Rus("Процессор") << m_processor;
+    kt << Rus("Ядер") << m_core;
+    kt << Rus("Тип ОП") << m_ramtype;
+    kt << Rus("Размер ОП") << m_ramsize;
+    kt << Rus("Разрешение экрана") << m_screenresol;
+    kt << Rus("Диагональ экрана") << m_screendiagonal;
 
     return out;
 }
@@ -207,7 +209,7 @@ void Computer::getStringToSend(std::string& stringToSend)
     std::replace(m_ramtype.begin(), m_ramtype.end(), ' ', '|');
     std::replace(m_screenresol.begin(), m_screenresol.end(), ' ', '|');
 
-    temp << m_processor << " " << m_core << " " << m_ramtype << " " << m_ramsize << " " << m_screenresol << " " << m_screendiagonal;
+    temp << NRus(m_processor.c_str()) << " " << m_core << " " << NRus(m_ramtype.c_str()) << " " << m_ramsize << " " << NRus(m_screenresol.c_str()) << " " << m_screendiagonal;
     stringToSend += temp.str();
 
 }
@@ -220,15 +222,21 @@ bool Computer::replaceObject(std::string& string)
     char processor[64], core[64], ramtype[64], ramsize[64], screenresol[64], screendiag[64];
     string = getWords(7, string, processor, core, ramtype, ramsize, screenresol, screendiag);
 
-    if (atoi(core) && atoi(ramsize) && atoi(screendiag) == 0)
-        return false;
+    int32_t tmp = (atoi(ramsize));
+    if (tmp < 0) tmp = 0;
+    m_ramsize = tmp;
+
+    tmp = (atoi(screendiag));
+    if (tmp < 0) tmp = 0;
+    m_screendiagonal = tmp;
+
+    tmp = (atoi(core));
+    if (tmp < 0) tmp = 0;
+    m_core = tmp;
 
     m_processor = processor;
     m_ramtype = ramtype;
     m_screenresol = screenresol;
-    m_core = atoi(core);
-    m_ramsize = atoi(ramsize);
-    m_screendiagonal = atoi(screendiag);
 
     return true;
 }
@@ -237,16 +245,16 @@ std::istream& MobilePhone::setState(std::istream& in)
 {
     Tech::setState(in);
 
-    std::cout << "Enter name of OS: ";
+    std::cout << Rus("Введите название ОС: ");
     std::getline(std::cin, m_os);
-    std::cout << "Enter resolution of screen: ";
+    std::cout << Rus("Введите разрешение экрана: ");
     std::getline(std::cin, m_screenresol);
-    getnumber(m_screendiagonal, "Enter screen diagonal: ");
-    std::cout << "Enter name of processor: ";
+    getnumber(m_screendiagonal, Rus("Введите диагональ экрана: "));
+    std::cout << Rus("Введите имя процессора: ");
     std::getline(std::cin, m_processor);
-    getnumber(m_core, "Enter amount of cores: ");
-    getnumber(m_ramsize, "Enter size of RAM: ");
-    getnumber(m_simcount, "Enter amount of sim cards: ");
+    getnumber(m_core, Rus("Введите количество ядер: "));
+    getnumber(m_ramsize, Rus("Введите размер ОП: "));
+    getnumber(m_simcount, Rus("Введите количество сим.карт: "));
 
 
     return in;
@@ -255,13 +263,13 @@ std::istream& MobilePhone::setState(std::istream& in)
 std::ostream& MobilePhone::print(std::ostream& out) const
 {
     Tech::print(out);
-    kt << "Operating System" << m_os;
-    kt << "Resolution of the screen" << m_screenresol;
-    kt << "Screen diagonal" << m_screendiagonal;
-    kt << "Processor" << m_processor;
-    kt << "Cores" << m_core;
-    kt << "RAM size" << m_ramsize;
-    kt << "Amount of the sim" << m_simcount;
+    kt << Rus("Операционная система") << m_os;
+    kt << Rus("Разрешение экрана") << m_screenresol;
+    kt << Rus("Диагональ экрана") << m_screendiagonal;
+    kt << Rus("Процессор") << m_processor;
+    kt << Rus("Ядер") << m_core;
+    kt << Rus("Размер ОП") << m_ramsize;
+    kt << Rus("Количество Сим.карт") << m_simcount;
 
     return out;
 }
@@ -303,7 +311,7 @@ void MobilePhone::getStringToSend(std::string& stringToSend)
     std::replace(m_screenresol.begin(), m_screenresol.end(), ' ', '|');
     std::replace(m_processor.begin(), m_processor.end(), ' ', '|');
 
-    temp << m_os << " " << m_screenresol << " " << m_screendiagonal << " " << m_processor << " " << m_core << " " << m_ramsize << " " << m_simcount;
+    temp << NRus(m_os.c_str()) << " " << NRus(m_screenresol.c_str()) << " " << m_screendiagonal << " " << NRus(m_processor.c_str()) << " " << m_core << " " << m_ramsize << " " << m_simcount;
     stringToSend += temp.str();
 }
 
@@ -315,17 +323,25 @@ bool MobilePhone::replaceObject(std::string& string)
     char os[64], screenresol[64], processor[64], core[64], ramsize[64], screendiag[64], simcount[64];
     string = getWords(8, string, os, screenresol, screendiag, processor, core, ramsize, simcount);
 
-    if (atoi(core) && atoi(ramsize) && atoi(screendiag) && atoi(simcount) == 0)
-        return false;
+    int32_t tmp = (atoi(ramsize));
+    if (tmp < 0) tmp = 0;
+    m_ramsize = tmp;
 
+    tmp = (atoi(screendiag));
+    if (tmp < 0) tmp = 0;
+    m_screendiagonal = tmp;
+
+    tmp = (atoi(core));
+    if (tmp < 0) tmp = 0;
+    m_core = tmp;
+
+    tmp = (atoi(simcount));
+    if (tmp < 0) tmp = 0;
+    m_simcount = tmp;
 
     m_os = os;
     m_processor = processor;
     m_screenresol = screenresol;
-    m_core = atoi(core);
-    m_ramsize = atoi(ramsize);
-    m_screendiagonal = atoi(screendiag);
-    m_simcount = atoi(simcount);
 
     return true;
 }
@@ -333,15 +349,15 @@ bool MobilePhone::replaceObject(std::string& string)
 std::istream& TV::setState(std::istream& in)
 {
     Tech::setState(in);
-    std::cout << "Enter type of screen: ";
+    std::cout << Rus("Введите тип экрана: ");
     std::getline(std::cin, m_typescreen);
-    std::cout << "Enter resolution of screen: ";
+    std::cout << Rus("Введите разрешение экрана: ");
     std::getline(std::cin, m_screenresolution);
-    getnumber(m_screendiagonal, "Enter screen diagonal: ");
-    std::cout << "Enter name of processor: ";
+    getnumber(m_screendiagonal, Rus("Введите диагональ экрана: "));
+    std::cout << Rus("Введите имя процессора: ");
     std::getline(std::cin, m_processor);
-    getnumber(m_core, "Enter amount of cores: ");
-    std::cout << "3D mode? Y - yes, Any - no: ";
+    getnumber(m_core, Rus("Введите количество симкарт: "));
+    std::cout << Rus("3Д режим? Y - да, Другое - нет: ");
     m_3Dmode = getchar() == 'Y' ? true : false; getchar();
 
     return in;
@@ -352,12 +368,12 @@ std::ostream& TV::print(std::ostream& out) const
     Tech::print(out);
 
     std::cout << std::boolalpha;
-    kt << "Type of screen" << m_typescreen;
-    kt << "Resolution of the screen" << m_screenresolution;
-    kt << "Diagonal of the screen" << m_screendiagonal;
-    kt << "Processor" << m_processor;
-    kt << "Cores" << m_core;
-    kt << "3D" << m_3Dmode;
+    kt << Rus("Тип экрана") << m_typescreen;
+    kt << Rus("Разрешение экрана") << m_screenresolution;
+    kt << Rus("Диагональ экрана") << m_screendiagonal;
+    kt << Rus("Процессор") << m_processor;
+    kt << Rus("Ядер") << m_core;
+    kt << Rus("3Д режим") << m_3Dmode;
 
     return out;
 }
@@ -397,7 +413,7 @@ void TV::getStringToSend(std::string& stringToSend)
     std::replace(m_screenresolution.begin(), m_screenresolution.end(), ' ', '|');
     std::replace(m_processor.begin(), m_processor.end(), ' ', '|');
 
-    temp << m_typescreen << " " << m_screenresolution << " " << m_screendiagonal << " " << m_processor << " " << m_core << " " << m_3Dmode;
+    temp << NRus(m_typescreen.c_str()) << " " << NRus(m_screenresolution.c_str()) << " " << m_screendiagonal << " " << NRus(m_processor.c_str()) << " " << m_core << " " << m_3Dmode;
     stringToSend += temp.str();
 }
 
@@ -406,13 +422,20 @@ bool TV::replaceObject(std::string& string)
     if (Tech::replaceObject(string) == false)
         return false;
 
-    char core[64], _3Dmode[64];
-    getWords(6, string, m_typescreen.c_str(), m_screenresolution.c_str(), m_processor.c_str(), core, _3Dmode);
+    char typescreen[64], screenresol[64], processor[64], core[64], _3Dmode[64];
+    getWords(6, string, typescreen, screenresol, processor, core, _3Dmode);
 
-    if (atoi(core))
-        return false;
-    m_core = atoi(core);
-    m_3Dmode = atoi(_3Dmode);
+    m_typescreen = typescreen;
+    m_processor = processor;
+    m_screenresolution = screenresol;
+
+    int32_t tmp = (atoi(core));
+    if (tmp < 0) tmp = 0;
+    m_core = tmp;
+
+    tmp = (atoi(_3Dmode));
+    if (tmp < 0) tmp = 0;
+    m_3Dmode = tmp;
 
     return true;
 }
@@ -420,11 +443,11 @@ bool TV::replaceObject(std::string& string)
 std::istream& Toaster::setState(std::istream& in)
 {
     Tech::setState(in);
-    getnumber(m_toastcount, "Enter amount of toasts: ");
-    getnumber(m_power, "Enter power of toaster: ");
-    std::cout << "Defrosting mode? Y - yes, Any - no: ";
+    getnumber(m_toastcount, Rus("Введите количество тостов: "));
+    getnumber(m_power, Rus("Введите мощность тостера: "));
+    std::cout << Rus("Режим разморозки? Y - да, Другое - нет: ");
     m_defrostring = getchar() == 'Y' ? true : false; getchar();
-    std::cout << "Heating mode? Y - yes, Any - no: ";
+    std::cout << Rus("Режим нагрева? Y - да, Другое - нет: ");
     m_heating = getchar() == 'Y' ? true : false; getchar();
 
     return in;
@@ -435,10 +458,10 @@ std::ostream& Toaster::print(std::ostream& out) const
     Tech::print(out);
 
     std::cout << std::boolalpha;
-    kt << "Amount of toasts" << m_toastcount;
-    kt << "Power" << m_power;
-    kt << "Defrosting mode" << m_defrostring;
-    kt << "Heating mode" << m_heating;
+    kt << Rus("Количество тостов") << m_toastcount;
+    kt << Rus("Мощность") << m_power;
+    kt << Rus("Разморозка") << m_defrostring;
+    kt << Rus("Нагрев") << m_heating;
 
     return out;
 }
@@ -480,13 +503,21 @@ bool Toaster::replaceObject(std::string& string)
     char toastcount[64], power[64], defrosting[64], heating[64];
     getWords(5, string, toastcount, power, defrosting, heating);
 
-    if (atoi(toastcount) && atoi(power) == 0)
-        return false;
+    int32_t tmp = (atoi(toastcount));
+    if (tmp < 0) tmp = 0;
+    m_toastcount = tmp;
 
-    m_toastcount = atoi(toastcount);
-    m_power = atoi(power);
-    m_defrostring = atoi(defrosting);
-    m_heating = atoi(heating);
+    tmp = (atoi(power));
+    if (tmp < 0) tmp = 0;
+    m_power = tmp;
+
+    tmp = (atoi(defrosting));
+    if (tmp < 0) tmp = 0;
+    m_defrostring = tmp;
+
+    tmp = (atoi(heating));
+    if (tmp < 0) tmp = 0;
+    m_heating = tmp;
 
     return true;
 }
@@ -494,9 +525,9 @@ bool Toaster::replaceObject(std::string& string)
 std::istream& CoffeMaker::setState(std::istream& in)
 {
     Tech::setState(in);
-    getnumber(m_power, "Enter power: ");
-    getnumber(m_pressure, "Enter pressure: ");
-    std::cout << "Cappuccino maker? Y - yes, Any - no: ";
+    getnumber(m_power, Rus("Введите мощность: "));
+    getnumber(m_pressure, Rus("Введите давление: "));
+    std::cout << Rus("Каппучино? Y - да, Другое - нет: ");
     m_cappuccinomaker = getchar() == 'Y' ? true : false; getchar();
 
     return in;
@@ -507,9 +538,9 @@ std::ostream& CoffeMaker::print(std::ostream& out) const
     Tech::print(out);
 
     std::cout << std::boolalpha;
-    kt << "Power" << m_power;
-    kt << "Pressure" << m_pressure;
-    kt << "Cappuccino maker" << m_cappuccinomaker;
+    kt << Rus("Мощность") << m_power;
+    kt << Rus("Давление") << m_pressure;
+    kt << Rus("Каппучино") << m_cappuccinomaker;
 
     return out;
 }
@@ -561,9 +592,9 @@ bool CoffeMaker::replaceObject(std::string& string)
 std::istream& ElKettle::setState(std::istream& in)
 {
     Tech::setState(in);
-    getnumber(m_power, "Enter power: ");
-    getnumber(m_volume, "Enter volume: ");
-    std::cout << "Timer? Y - yes, Any - no: ";
+    getnumber(m_power, Rus("Введите мощность: "));
+    getnumber(m_volume, Rus("Введите объем: "));
+    std::cout << Rus("Таймер? Y - да, Другое - нет: ");
     m_timer = getchar() == 'Y' ? true : false; getchar();
 
     return in;
@@ -574,9 +605,9 @@ std::ostream& ElKettle::print(std::ostream& out) const
     Tech::print(out);
 
     std::cout << std::boolalpha;
-    kt << "Power" << m_power;
-    kt << "Volume" << m_volume;
-    kt << "Timer" << m_timer;
+    kt << Rus("Мощность") << m_power;
+    kt << Rus("Объем") << m_volume;
+    kt << Rus("Таймер") << m_timer;
 
     return out;
 }
@@ -628,10 +659,10 @@ bool ElKettle::replaceObject(std::string& string)
 std::istream& Fridge::setState(std::istream& in)
 {
     Tech::setState(in);
-    getnumber(m_volume, "Enter volume: ");
-    getnumber(m_shelfcount, "Enter amount of shelfs: ");
-    getnumber(m_noiselvl, "Enter lvl of noise: ");
-    std::cout << "Multizone? Y - yes, Any - no: ";
+    getnumber(m_volume, Rus("Введите объем: "));
+    getnumber(m_shelfcount, Rus("Введите количество полок: "));
+    getnumber(m_noiselvl, Rus("Введите уровень шума: "));
+    std::cout << Rus("Мультизона? Y - да, Другое - нет: ");
     m_multizone = getchar() == 'Y' ? true : false; getchar();
 
     return in;
@@ -642,10 +673,10 @@ std::ostream& Fridge::print(std::ostream& out) const
     Tech::print(out);
 
     std::cout << std::boolalpha;
-    kt << "Volume" << m_volume;
-    kt << "Amount of shelf" << m_shelfcount;
-    kt << "Lvl of noise" << m_noiselvl;
-    kt << "Multizone" << m_multizone;
+    kt << Rus("Объем") << m_volume;
+    kt << Rus("Кол.полок") << m_shelfcount;
+    kt << Rus("Уровень шума") << m_noiselvl;
+    kt << Rus("Мультизона") << m_multizone;
 
     return out;
 }
@@ -700,11 +731,11 @@ bool Fridge::replaceObject(std::string& string)
 std::istream& Conditioner::setState(std::istream& in)
 {
     Tech::setState(in);
-    std::cout << "Enter working mode: ";
+    std::cout << Rus("Введите режим работы: ");
     std::getline(std::cin, m_workmode);
-    getnumber(m_coolingpower, "Enter cooling power: ");
-    getnumber(m_heatingpower, "Enter heating power: ");
-    std::cout << "Remote control? Y - yes, Any - no: ";
+    getnumber(m_coolingpower, Rus("Введите мощность охлаждения: "));
+    getnumber(m_heatingpower, Rus("Введите мощность нагревания: "));
+    std::cout << Rus("Удаленное управление? Y - да, Другое - нет: ");
     m_remotecontol = getchar() == 'Y' ? true : false; getchar();
 
     return in;
@@ -715,10 +746,10 @@ std::ostream& Conditioner::print(std::ostream& out) const
     Tech::print(out);
 
     std::cout << std::boolalpha;
-    kt << "Working mode" << m_workmode;
-    kt << "Cooling power" << m_coolingpower;
-    kt << "Heating power" << m_heatingpower;
-    kt << "Remote control" << m_remotecontol;
+    kt << Rus("Режим работы") << m_workmode;
+    kt << Rus("Охл.мощность") << m_coolingpower;
+    kt << Rus("Нагрев.мощность") << m_heatingpower;
+    kt << Rus("Уд.управление") << m_remotecontol;
 
     return out;
 }
@@ -751,7 +782,7 @@ void Conditioner::getStringToSend(std::string& stringToSend)
 
     std::replace(m_workmode.begin(), m_workmode.end(), ' ', '|');
 
-    temp << m_workmode << " " << m_coolingpower << " " << m_heatingpower << " " << m_remotecontol;
+    temp << NRus(m_workmode.c_str()) << " " << m_coolingpower << " " << m_heatingpower << " " << m_remotecontol;
     stringToSend += temp.str();
 
 }
@@ -778,12 +809,12 @@ bool Conditioner::replaceObject(std::string& string)
 std::istream& Microwawe::setState(std::istream& in)
 {
     Tech::setState(in);
-    getnumber(m_power, "Enter power: ");
-    getnumber(m_lvlpower_count, "Enter amount of lvls of power: ");
-    getnumber(m_volume, "Enter volume: ");
-    std::cout << "Quickstart? Y - yes, Any - no: ";
+    getnumber(m_power, Rus("Введите мощность: "));
+    getnumber(m_lvlpower_count, Rus("Введите кол-во уровней мощности: "));
+    getnumber(m_volume, Rus("Введите объем: "));
+    std::cout << Rus("Быстрый старт? Y - да, Другое - нет: ");
     m_quickstart = getchar() == 'Y' ? true : false; getchar();
-    std::cout << "Timer? Y - yes, Any - no: ";
+    std::cout << Rus("Таймер? Y - да, Другое - нет: ");
     m_timer = getchar() == 'Y' ? true : false; getchar();
 
     return in;
@@ -793,11 +824,11 @@ std::ostream& Microwawe::print(std::ostream& out) const
 {
     Tech::print(out);
     std::cout << std::boolalpha;
-    kt << "Power" << m_power;
-    kt << "Lvls of power" << m_lvlpower_count;
-    kt << "Volume" << m_volume;
-    kt << "Quckstart" << m_quickstart;
-    kt << "Timer" << m_timer;
+    kt << Rus("Мощность") << m_power;
+    kt << Rus("Уровней мощности") << m_lvlpower_count;
+    kt << Rus("Объем") << m_volume;
+    kt << Rus("Быстр.старт") << m_quickstart;
+    kt << Rus("Таймер") << m_timer;
 
     return out;
 }

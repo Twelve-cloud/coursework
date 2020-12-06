@@ -26,7 +26,7 @@ public:
     void remObject(const std::uint32_t& ID);
     void changeObject(const std::uint32_t& ID);
     void filltration(const std::string& data);
-    void sort();
+    void sort(std::string type);
     bool findObject(const std::uint32_t& ID, std::uint32_t& index); // вспомогательная функция для remObject и changeObject
     bool findObject(const std::uint32_t& ID);
     /* функции работы с вектором: добавление записи, удаление записи, редактирование записи, фильтрация данных, сортировка */

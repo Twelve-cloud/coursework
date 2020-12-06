@@ -8,16 +8,36 @@
 
 extern StreamTable kt;
 
-bool compare(Tech* obj1, Tech* obj2) // функция для сортировки
+bool comparePrice(Tech* obj1, Tech* obj2) // функция для сортировки
 {
     return obj1 -> getPrice() < obj2 -> getPrice();
+}
+
+bool compareID(Tech* obj1, Tech* obj2) // функция для сортировки
+{
+    return obj1 -> getID() < obj2 -> getID();
+}
+
+bool compareDate(Tech* obj1, Tech* obj2) // функция для сортировки
+{
+    return obj1 -> getRecordTime() < obj2 -> getRecordTime();
+}
+
+bool compareSerial(Tech* obj1, Tech* obj2) // функция для сортировки
+{
+    return obj1 -> getSerialNumber() < obj2 -> getSerialNumber();
+}
+
+bool compareManufacturer(Tech* obj1, Tech* obj2) // функция для сортировки
+{
+    return obj1 -> getManufacturer() < obj2 -> getManufacturer();
 }
 
 void TechBase::addObject(Tech* object)
 {
     std::cin >> *object;
     push_back(object);
-    std::cout << "Record successfully added." << std::endl;
+    std::cout << Rus("Запись успешно добавлена.") << std::endl;
 }
 
 void TechBase::addObject(Tech* object, int)
@@ -25,7 +45,7 @@ void TechBase::addObject(Tech* object, int)
     object -> getRecordTime() = object -> setCurrentDate();
     object -> getRecordTime().erase(object -> getRecordTime().find(","), 1);
     push_back(object);
-    std::cout << "Record successfully added." << std::endl;
+    std::cout << Rus("Запись успешно добавлена.") << std::endl;
 }
 
 void TechBase::remObject(const uint32_t& ID)
@@ -34,11 +54,11 @@ void TechBase::remObject(const uint32_t& ID)
     if (findObject(ID, index))
     {
         erase(begin() + index);
-        std::cout << "Record successfully deleted." << std::endl;
+        std::cout << Rus("Запись успешно удалена.") << std::endl;
     }
     else
     {
-        std::cout << "Record with this ID not found." << std::endl;
+        std::cout << Rus("Запись с таким ИД не найдена.") << std::endl;
     }
 }
 
@@ -48,11 +68,11 @@ void TechBase::changeObject(const uint32_t& ID)
     if (findObject(ID, index))
     {
         std::cin >> *(*this)[index];
-        std::cout << "Data of this record is successuly changed." << std::endl;
+        std::cout << Rus("Запись успешно изменена.") << std::endl;
     }
     else
     {
-        std::cout << "Record with this ID not found." << std::endl;
+        std::cout << Rus("Запись с таким ИД не найдена.") << std::endl;
     }
 }
 
@@ -83,7 +103,7 @@ void TechBase::filltration(const std::string &data)
 {
     system("cls");
     kt.firstCell(true);
-    std::cout << "Enter data: ";
+    std::cout << Rus("Введите данные: ");
     for (char ch : data)
     {
         putchar(ch);
@@ -140,18 +160,32 @@ void TechBase::filltration(const std::string &data)
     }
 }
 
-void TechBase::sort()
+void TechBase::sort(std::string type)
 {
-    std::sort(begin(), end(), compare);
+    bool (*compare) (Tech*, Tech*);
+
+    if (type == Rus("ИД"))
+        compare = compareID;
+    if (type == Rus("Дата"))
+        compare = compareDate;
+    if (type == Rus("Серия"))
+        compare = compareSerial;
+    if (type == Rus("Производитель"))
+        compare = compareManufacturer;
+    if (type == Rus("Цена"))
+        compare = comparePrice;
+
+    if (type == Rus("ИД") || Rus("Дата") || Rus("Серия") || Rus("Производитель") || Rus("Цена"))
+        std::sort(begin(), end(), compare);
 }
 
-void TechBase::readFile() // НЕ ДОДЕЛАНО
+void TechBase::readFile()
 {
     std::uint32_t ID;
     std::string type;
-    std::map<std::string, Tech*> create_type = {{"Computer", new Computer},{"MobilePhone", new MobilePhone}, {"TV", new TV}, {"Toaster", new Toaster},
-                                                {"CoffeeMaker", new CoffeMaker}, {"ElectricKettle", new ElKettle}, {"Fridge", new Fridge},
-                                                {"Conditioner", new Conditioner}, {"Microwave", new Microwawe}};
+    std::map<std::string, Tech*> create_type = {{"Компьютер", new Computer},{"Моб.Телефон", new MobilePhone}, {"Телевизор", new TV},
+                                                {"Тостер", new Toaster}, {"Кофемашина", new CoffeMaker}, {"Эл.Чайник", new ElKettle},
+                                                {"Холодильник", new Fridge}, {"Кондиционер", new Conditioner}, {"Микроволновка", new Microwawe}};
 
     m_fstream.open(m_filename + ".txt", std::ios_base::in);
 

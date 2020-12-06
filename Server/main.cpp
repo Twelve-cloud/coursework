@@ -4,6 +4,7 @@
 #include "server.h"
 #include "mythread.h"
 #include <QApplication>
+#include <QTextCodec>
 #include <Windows.h>
 
 StreamTable st(std::cout);
@@ -15,8 +16,10 @@ int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    st.AddCol(20);
-    st.AddCol(20);
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("IBM 866"));
+
+    st.AddCol(40);
+    st.AddCol(40);
     st.MakeBorderExt(true);
     st.SetDelimRow(true, '-');
     st.SetDelimCol(true, '|');
@@ -27,13 +30,13 @@ int main(int argc, char* argv[])
     kt.SetDelimRow(true, '-');
     kt.SetDelimCol(true, '|');
 
-    mt.AddCol(30);
+    mt.AddCol(40);
     mt.MakeBorderExt(true);
     mt.SetDelimRow(true, '-');
     mt.SetDelimCol(true, '|');
 
-    nt.AddCol(30);
-    nt.AddCol(30);
+    nt.AddCol(40);
+    nt.AddCol(40);
     nt.MakeBorderExt(true);
     nt.SetDelimRow(true, '-');
     nt.SetDelimCol(true, '|');

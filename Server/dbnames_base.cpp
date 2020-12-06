@@ -4,8 +4,10 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <QString>
 
 extern StreamTable nt;
+#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
 
 bool compare(const TechBase* obj1, const TechBase* obj2) // функция для сортировки
 {
@@ -15,7 +17,7 @@ bool compare(const TechBase* obj1, const TechBase* obj2) // функция дл�
 void DbNamesDatabase::addDb(TechBase* object)
 {
     push_back(object);
-    std::cout << "Database successfully added." << std::endl;
+    std::cout << Rus("База данных успешно добавлена.") << std::endl;
 }
 
 void DbNamesDatabase::remDb(const std::string& filename)
@@ -25,11 +27,11 @@ void DbNamesDatabase::remDb(const std::string& filename)
     {
         erase(begin() + index);
         remove((filename + ".txt").c_str());
-        std::cout << "Database successfully deleted." << std::endl;
+        std::cout << Rus("База данных успешно удалена.") << std::endl;
     }
     else
     {
-        std::cout << "Database with this name not found." << std::endl;
+        std::cout << Rus("Базы данных с таким именем не существует.") << std::endl;
     }
 }
 
@@ -39,16 +41,16 @@ void DbNamesDatabase::changeDbName(const std::string& filename)
     if (findDbName(filename, index))
     {
         std::string dbname, dbpass;
-        std::cout << "Enter new name: "; std::getline(std::cin, dbname);
-        std::cout << "Enter new password: "; std::getline(std::cin, dbpass);
+        std::cout << Rus("Введите новое имя: "); std::getline(std::cin, dbname);
+        std::cout << Rus("Введите новый пароль: "); std::getline(std::cin, dbpass);
         (*this)[index] -> setFilename(dbname);
         (*this)[index] -> setPassword(dbpass);
         rename((filename + ".txt").c_str(), (dbname + ".txt").c_str());
-        std::cout << "Data of this database is successuly changed." << std::endl;
+        std::cout << Rus("Данные БД успешно изменены.") << std::endl;
     }
     else
     {
-        std::cout << "Database with this name not found." << std::endl;
+        std::cout << Rus("База данных с таким именем не существует.") << std::endl;
     }
 }
 

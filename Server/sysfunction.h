@@ -3,6 +3,10 @@
 
 #include <iostream>
 #include <iomanip>
+#include <QString>
+
+#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
+
 
 template <typename T>
 void getnumber(T& number, const char* message)
@@ -19,7 +23,7 @@ void getnumber(T& number, const char* message)
             isCorrect = false;
             std::cin.clear();
             std::cin.ignore(32767, '\n');
-            std::cout << "Invalid number. Try again." << std::endl;
+            std::cout << Rus("Некорректное число. Попробуйте еще раз.") << std::endl;
         }
         else
         {

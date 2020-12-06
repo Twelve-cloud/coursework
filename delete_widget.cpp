@@ -4,15 +4,15 @@
 DeleteWidget::DeleteWidget(QWidget *parent) : QWidget(parent)
 {
     QWidget::setFixedSize(QSize(360, 240));
-    setWindowTitle("Delete record");
+    setWindowTitle("Удалить запись");
 
-    m_generalLbl    = new QLabel("Delete record");
+    m_generalLbl    = new QLabel("Удалить запись");
     m_generalLbl -> setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    m_idLbl      = new QLabel("ID: ");
+    m_idLbl      = new QLabel("ИД: ");
     m_idLineEdit = new QLineEdit(this);;
-    m_okBtn      = new QPushButton("&Ok");
+    m_okBtn      = new QPushButton("&Ок");
     m_okBtn      -> setShortcut(Qt::Key_Return);
-    m_cancelBtn  = new QPushButton("&Cancel");
+    m_cancelBtn  = new QPushButton("&Назад");
 
     QHBoxLayout *gen_label = new QHBoxLayout;
     gen_label -> addWidget(m_generalLbl,  Qt::Alignment(Qt::AlignHCenter | Qt::AlignVCenter));
@@ -46,11 +46,11 @@ void DeleteWidget::slot_cancel_clicked()
 void DeleteWidget::setError(const QString& error_str)
 {
     m_generalLbl -> setText(error_str);
-    if (error_str != "Delete record") {
+    if (error_str != "Удалить запись") {
         m_generalLbl -> setStyleSheet("color: red");
     }
 
-    if (error_str == "Delete record") {
+    if (error_str == "Удалить запись") {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
     }
 }

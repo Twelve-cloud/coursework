@@ -10,16 +10,8 @@
 #include <iostream>
 #include <cstring>
 
-//стратегия формирования единой таблицы
 #define CRLF "\n"
 
-//стратегия построчной выгрузки таблицы
-//#define CRLF std::endl
-
-/**
-* Прямоугольная таблица с разделителями строк и столбцов
-* Синтаксис как у потоков C++
-*/
 class StreamTable {
 public:
     std::ostream &os_;

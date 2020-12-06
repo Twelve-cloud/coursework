@@ -32,10 +32,12 @@ SOURCES += \
         createdb_window.cpp \
         delete_widget.cpp \
         find_widget.cpp \
+        greetingwindow.cpp \
         incryption.cpp \
         main.cpp \
         mainwindow.cpp \
         regi_window.cpp \
+        sort_widget.cpp \
         sysfunction.cpp \
         type_window.cpp
 
@@ -46,9 +48,11 @@ HEADERS += \
         createdb_window.h \
         delete_widget.h \
         find_widget.h \
+        greetingwindow.h \
         incryption.h \
         mainwindow.h \
         regi_window.h \
+        sort_widget.h \
         type_window.h
 
 FORMS += \
@@ -57,9 +61,11 @@ FORMS += \
         createdb_window.ui \
         delete_widget.ui \
         find_widget.ui \
+        greetingwindow.ui \
         mainwindow.ui \
         output_menu.ui \
         regi_window.ui \
+        sort_widget.ui \
         type_window.ui
 
 # Default rules for deployment.

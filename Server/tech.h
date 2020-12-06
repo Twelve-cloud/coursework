@@ -3,9 +3,11 @@
 
 #include <cstdint>
 #include <string>
+#include <QString>
 #include <ctime>
 
 using std::uint64_t;
+#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
 
 // Определение базового абстрактного класса
 
@@ -65,7 +67,7 @@ private:
 class Computer final: public Tech
 {
 public:
-    Computer() : Tech("Computer") {}
+    Computer() : Tech("Компьютер") {}
     virtual ~Computer() {};
 
     std::string& getProcessor() { return m_processor; }
@@ -95,7 +97,7 @@ private:
 class MobilePhone final: public Tech
 {
 public:
-    MobilePhone() : Tech("MobilePhone") {}
+    MobilePhone() : Tech("Моб.Телефон") {}
     virtual ~MobilePhone() {};
 
     std::string& getOS() { return m_os; }
@@ -127,7 +129,7 @@ private:
 class TV final: public Tech
 {
 public:
-    TV() : Tech("TV") {}
+    TV() : Tech("Телевизор") {}
     virtual ~TV() {};
 
     std::string& getTypescreen() { return  m_typescreen; }
@@ -157,7 +159,7 @@ private:
 class Toaster final: public Tech
 {
 public:
-    Toaster() : Tech("Toaster") {}
+    Toaster() : Tech("Тостер") {}
     virtual ~Toaster() {};
 
     uint32_t& getToastCount() { return m_toastcount; }
@@ -183,7 +185,7 @@ private:
 class CoffeMaker final: public Tech
 {
 public:
-    CoffeMaker() : Tech("CoffeeMaker") {}
+    CoffeMaker() : Tech("Кофемашина") {}
     virtual ~CoffeMaker() {};
 
     uint32_t& getPower() { return m_power; }
@@ -207,7 +209,7 @@ private:
 class ElKettle final: public Tech
 {
 public:
-    ElKettle() : Tech("ElectricKettle") {}
+    ElKettle() : Tech("Эл.Чайник") {}
     virtual ~ElKettle() {};
 
     uint32_t& getPower() { return m_power; }
@@ -231,7 +233,7 @@ private:
 class Fridge final: public Tech
 {
 public:
-    Fridge() : Tech("Fridge") {}
+    Fridge() : Tech("Холодильник") {}
     virtual ~Fridge() {};
 
     uint32_t& getVolume() { return m_volume; }
@@ -257,7 +259,7 @@ private:
 class Conditioner final: public Tech
 {
 public:
-    Conditioner() : Tech("Conditioner") {}
+    Conditioner() : Tech("Кондиционер") {}
     virtual ~Conditioner() {};
 
     std::string& getWorkmode() { return m_workmode; }
@@ -283,7 +285,7 @@ private:
 class Microwawe final: public Tech
 {
 public:
-    Microwawe() : Tech("Microwave") {}
+    Microwawe() : Tech("Микроволновка") {}
     virtual ~Microwawe() {};
 
     uint32_t& getPower() { return m_power; }

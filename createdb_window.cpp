@@ -11,16 +11,16 @@
 CreateDB_Window::CreateDB_Window(QWidget *parent) : QWidget(parent)
 {
     QWidget::setFixedSize(QSize(480, 360));
-    setWindowTitle("Database settings");
+    setWindowTitle("Настройки базы данных");
 
-    m_dbSettingsLbl    = new QLabel("Database settings");
+    m_dbSettingsLbl    = new QLabel("Настройки базы данных");
     m_dbSettingsLbl    -> setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    m_dbNameLbl        = new QLabel("Database name: ");
-    m_dbPasswordLbl    = new QLabel("Password: ");
+    m_dbNameLbl        = new QLabel("Имя базы данных: ");
+    m_dbPasswordLbl    = new QLabel("Пароль: ");
     m_dbNameLine       = new QLineEdit(this);
     m_dbPassLine       = new QLineEdit(this);
     m_dbPassLine       -> setEchoMode(QLineEdit::Password);
-    m_okBtn            = new QPushButton("&Create | Connect");
+    m_okBtn            = new QPushButton("&Создать | Подключиться");
 
     QHBoxLayout *gen_label = new QHBoxLayout;
     gen_label -> addWidget(m_dbSettingsLbl,  Qt::Alignment(Qt::AlignHCenter | Qt::AlignVCenter));
@@ -48,17 +48,17 @@ void CreateDB_Window::Ok_clicked()
 
     if (m_dbName.isEmpty() || m_dbPass.isEmpty())
     {
-        setError("Fill fields");
+        setError("Заполните все поля");
         return;
     }
 
-    if(m_okBtn ->text() == "Create")
+    if(m_okBtn ->text() == "Создать")
     {
         for (const auto& ch : m_dbName)
         {
             if (!ch.isDigit() && !ch.isLetter())
             {
-                setError("Database name must contain only digits and letters");
+                setError("Имя базы данных должен содержать только бувы или цифры");
                 isWrong = true;
             }
         }
@@ -67,18 +67,18 @@ void CreateDB_Window::Ok_clicked()
         {
             if (!ch.isDigit() && !ch.isLetter())
             {
-                setError("Password must contain only digits and letters");
+                setError("Пароль должен содержать только буквы или цифры");
                 isWrong = true;
             }
         }
 
         if (m_dbName.size() < 6 || m_dbName.size() > 20)
         {
-            setError("Database name must be between 6 and 20 characters");
+            setError("Имя базы данных должно быть от 6 до 20 символов");
         }
         else if (m_dbPass.size() < 6 || m_dbPass.size() > 20)
         {
-            setError("Password must be between 6 and 20 characters");
+            setError("Пароль должен быть от 6 до 20 символов");
         }
         else if (!isWrong)
         {
@@ -115,7 +115,7 @@ void CreateDB_Window::changeOkName(QString btnName)
 
 bool CreateDB_Window::checkAction()
 {
-    if(m_okBtn -> text() == "Create")
+    if(m_okBtn -> text() == "Создать")
         return true;
     return false;
 }
@@ -123,11 +123,11 @@ bool CreateDB_Window::checkAction()
 void CreateDB_Window::setError(const QString& error_str)
 {
     m_dbSettingsLbl -> setText(error_str);
-    if (error_str != "Database settings") {
+    if (error_str != "Настройки базы данных") {
         m_dbSettingsLbl -> setStyleSheet("color: red");
     }
 
-    if (error_str == "Database settings") {
+    if (error_str == "Настройки базы данных") {
         m_dbSettingsLbl -> setStyleSheet("color: rgb(200, 200, 200)");
     }
 }

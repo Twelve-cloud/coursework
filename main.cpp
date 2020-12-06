@@ -1,9 +1,13 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QFile>
+#include <QTextCodec>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     QApplication app(argc, argv);
+
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     QString filename = ":/style.css";
     if (!QFile::exists(filename)) {

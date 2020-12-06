@@ -2,9 +2,13 @@
 #include "account_base.h"
 #include "account.h"
 #include <iostream>
+#include <QString>
+#include <QTextCodec>
 #include <algorithm>
 
+
 extern StreamTable st;
+#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
 
 bool compare(const Account* obj1, const Account* obj2) // функция для сортировки
 {
@@ -15,7 +19,7 @@ void AccountBase::addObject(Account* object)
 {
     std::cin >> *object;
     push_back(object);
-    std::cout << "Account successfully added." << std::endl;
+    std::cout << Rus("Аккаунт успешно добавлен") << std::endl;
 }
 
 void AccountBase::remObject(const std::string &login)
@@ -24,11 +28,11 @@ void AccountBase::remObject(const std::string &login)
     if (findObject(login, index))
     {
         erase(begin() + index);
-        std::cout << "Account successfully deleted." << std::endl;
+        std::cout << Rus("Аккаунт успешно удален") << std::endl;
     }
     else
     {
-        std::cout << "Account with this login not found." << std::endl;
+        std::cout << Rus("Аккаунта с таким логин не существует") << std::endl;
     }
 }
 
@@ -38,11 +42,11 @@ void AccountBase::changeObject(const std::string& login)
     if (findObject(login, index))
     {
         std::cin >> *(*this)[index];
-        std::cout << "Data of this account is successuly changed." << std::endl;
+        std::cout << Rus("Данные аккаунта были успешно изменены") << std::endl;
     }
     else
     {
-        std::cout << "Account with this login not found." << std::endl;
+        std::cout << Rus("Аккаунта с таким логином не существует") << std::endl;
     }
 }
 
@@ -84,7 +88,7 @@ void AccountBase::filltration(const std::string &data)
 {
     system("cls");
     st.firstCell(true);
-    std::cout << "Enter data: ";
+    std::cout << Rus("Введите данные: ");
     for (char ch : data)
     {
         putchar(ch);

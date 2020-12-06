@@ -82,7 +82,7 @@ namespace Output
         SERVER_RANGE_DOWN = 3,
         ACCOUNT_RANGE_DOWN = 8,
         TECH_BASE_RANGE_DOWN = 7,
-        TECH_RANGE_DOWN = 8,
+        TECH_RANGE_DOWN = 7,
     };
 }
 

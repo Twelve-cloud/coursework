@@ -27,31 +27,31 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
     connect(&m_regi, SIGNAL(back_to_auth_clicked()), this, SLOT(backToAuth()));
     connect(&m_dbWindow, SIGNAL(send_db_settings_clicked()), this, SLOT(sendDbData()));
 
-    setWindowTitle("Main Window");
+    setWindowTitle("Главное окно");
     setWindowState(Qt::WindowMaximized);
 
-    m_menu[FILE]    = menuBar() -> addMenu("File");
-    m_menu[EDIT]    = menuBar() -> addMenu("Edit");
-    m_menu[WINDOW]  = menuBar() -> addMenu("Window");
-    m_menu[HELP]    = menuBar() -> addMenu("Help");
+    m_menu[FILE]    = menuBar() -> addMenu("Файл");
+    m_menu[EDIT]    = menuBar() -> addMenu("Изменить");
+    m_menu[WINDOW]  = menuBar() -> addMenu("Окно");
+    m_menu[HELP]    = menuBar() -> addMenu("Помощь");
 
-    QAction *quit = new QAction("&Quit");
+    QAction *quit = new QAction("&Выйти из программы");
     quit -> setShortcut(tr("Ctrl+Q"));
 
-    QAction *back = new QAction("&Log out");
+    QAction *back = new QAction("&Выйти из системы");
     back -> setShortcut(tr("Ctrl+B"));
 
-    QAction *createDB = new QAction("Create DB");
+    QAction *createDB = new QAction("Создать БД");
     createDB -> setShortcut(tr("Ctrl+N"));
 
-    QAction *connectDB = new QAction("Connect to DB");
+    QAction *connectDB = new QAction("Подключиться к БД");
     connectDB -> setShortcut(tr("Ctrl+L"));
 
-    full_screen = new QAction("Fullscreen mode");
+    full_screen = new QAction("Полноэкранный режим");
     full_screen -> setShortcut(tr("Ctrl+Shift+F11"));
     full_screen -> setCheckable(true);
 
-    QAction* about = new QAction("About");
+    QAction* about = new QAction("О разработчике");
     about -> setShortcut(tr("F4"));
 
     m_menu[FILE]    -> addAction(createDB);
@@ -62,6 +62,13 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
     m_menu[HELP]    -> addAction(about);
 
     leftMenu = new QMdiArea(this);
+
+    m_greetingWidget = new GreetingWindow(leftMenu);
+    subWindowGreeting = leftMenu -> addSubWindow(m_greetingWidget);
+    subWindowGreeting -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    subWindowGreeting -> move(0, 0);
+    subWindowGreeting -> setFixedSize(QGuiApplication::screens().at(0)->geometry().width(), QGuiApplication::screens().at(0)->geometry().height());
+    subWindowGreeting -> show();
 
     m_types = new TypeWindow(leftMenu);
     subWindowTypes = leftMenu -> addSubWindow(m_types);
@@ -97,13 +104,23 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
 
     subWindowFind = leftMenu -> addSubWindow(m_findWidget);
     subWindowFind -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
-    subWindowFind -> move(QGuiApplication::screens().at(0)->geometry().width() / 2 - m_deleteWidget -> size().width() / 2,
-                            QGuiApplication::screens().at(0)->geometry().height() / 2 - m_deleteWidget -> size().height() / 2);
+    subWindowFind -> move(QGuiApplication::screens().at(0)->geometry().width() / 2 - m_findWidget -> size().width() / 2,
+                            QGuiApplication::screens().at(0)->geometry().height() / 2 - m_findWidget -> size().height() / 2);
     subWindowFind -> hide();
+
+    m_sortWidget = new SortWidget;
+
+    subWindowSort = leftMenu -> addSubWindow(m_sortWidget);
+    subWindowSort -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    subWindowSort -> move(QGuiApplication::screens().at(0)->geometry().width() / 2 - m_sortWidget -> size().width() / 2,
+                            QGuiApplication::screens().at(0)->geometry().height() / 2 - m_sortWidget -> size().height() / 2);
+    subWindowSort -> hide();
 
     setCentralWidget(leftMenu);
 
     connect(m_table, SIGNAL(cellChanged(int, int)), this, SLOT(slot_cellChanged(int, int)));
+    connect(m_sortWidget, SIGNAL(sort_type_clicked()), this, SLOT(slot_sortTypeClicked()));
+    connect(m_sortWidget, SIGNAL(sort_cancel_clicked()), this, SLOT(slot_sortCancelClicked()));
     connect(m_findWidget, SIGNAL(find_ok_clicked()), this, SLOT(slot_findOkClicked()));
     connect(m_findWidget, SIGNAL(find_cancel_clicked()), this, SLOT(slot_findCancelClicked()));
     connect(m_deleteWidget, SIGNAL(delete_ok_clicked()), this, SLOT(slot_deleteOkClicked()));
@@ -112,7 +129,7 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
     connect(m_actions, SIGNAL(delete_record_clicked()), this, SLOT(slot_deleteRecordClicked()));
     connect(m_actions, SIGNAL(change_record_clicked()), this, SLOT(slot_changeRecordClicked()));
     connect(m_actions, SIGNAL(find_record_clicked()), this, SLOT(slot_findRecordClicked()));
-    connect(m_actions, SIGNAL(sort_records_clicked()), this, SLOT(slot_sort()));
+    connect(m_actions, SIGNAL(sort_records_clicked()), this, SLOT(slot_sortRecordsClicked()));
     connect(m_types, SIGNAL(menu_actions_call()), this, SLOT(slot_menu_actions_call()));
     connect(createDB, SIGNAL(triggered()), this, SLOT(createDB()));
     connect(connectDB, SIGNAL(triggered()), this, SLOT(connectDB()));
@@ -137,7 +154,7 @@ void MainWindow::display() {
 
 void MainWindow::registerWindowShow() {
     m_regi.clearLines();
-    m_regi.setError("Registration");
+    m_regi.setError("Регистрация");
     m_auth.hide();
     m_regi.show();
 }
@@ -146,7 +163,7 @@ void MainWindow::Authorization() {
     if (!m_auth.isEmptyLine()) {
         SendToServer(SendingCodes::AUTHENTIFICATION, m_auth.getLogin() + " " + m_auth.getPassword());
     } else {
-        m_auth.setError("Fill all fields");
+        m_auth.setError("Заполните все поля");
     }
 }
 
@@ -154,7 +171,7 @@ void MainWindow::Registration() {
     if (m_regi.checkPass()) {
         SendToServer(SendingCodes::REGISTRATION, m_regi.getLogin() + " " + m_regi.getPassword());
     } else {
-        m_regi.setError("Confirm incorrect");
+        m_regi.setError("Неверный пароль");
     }
 }
 
@@ -186,16 +203,16 @@ void MainWindow::sendDbData()
 
 void MainWindow::createDB()
 {
-    m_dbWindow.setError("Database settings");
-    m_dbWindow.changeOkName("Create");
+    m_dbWindow.setError("Настройки базы данных");
+    m_dbWindow.changeOkName("Создать");
     m_dbWindow.clearLines();
     m_dbWindow.show();
 }
 
 void MainWindow::connectDB()
 {
-    m_dbWindow.setError("Database settings");
-    m_dbWindow.changeOkName("Connect");
+    m_dbWindow.setError("Настройки базы данных");
+    m_dbWindow.changeOkName("Подключиться");
     m_dbWindow.clearLines();
     m_dbWindow.show();
 }
@@ -212,9 +229,20 @@ void MainWindow::slot_menu_actions_call()
     SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
 }
 
-void MainWindow::slot_sort()
+void MainWindow::slot_sortRecordsClicked()
 {
-    SendToServer(SendingCodes::SORT_RECORDS, " " + m_dbWindow.getName());
+    subWindowSort -> hide();
+    subWindowSort -> show();
+}
+
+void MainWindow::slot_sortTypeClicked()
+{
+    SendToServer(SendingCodes::SORT_RECORDS, m_sortWidget -> getType() + " " + m_dbWindow.getName());
+}
+
+void MainWindow::slot_sortCancelClicked()
+{
+    subWindowSort -> hide();
 }
 
 void MainWindow::slot_deleteRecordClicked()
@@ -227,7 +255,7 @@ void MainWindow::slot_deleteOkClicked()
 {
     if (m_deleteWidget -> isEmptyLine())
     {
-        m_deleteWidget -> setError("Fill all fields");
+        m_deleteWidget -> setError("Заполните все поля");
     }
     else
     {
@@ -248,7 +276,7 @@ void MainWindow::slot_findOkClicked()
 {
     if (m_findWidget -> isEmptyLine())
     {
-        m_findWidget -> setError("Fill all fields");
+        m_findWidget -> setError("Заполните все поля");
     }
     else
     {
@@ -310,79 +338,79 @@ void MainWindow::slot_cellChanged(int row, int col)
 
 void MainWindow::getHeaders(QString type)
 {
-    char* Tech[] = {"ID", "Type", "Date", "Time", "Day", "Serial Number", " Manufacturer", "Release Date", "Model", "Vendor", "Countrymaker", "Price"};
-    char* Computer[] = {"Processor", "Core", "Ram Type", "Ram Size", "Screen res", "Screen diagonal"};
-    char* Mobile[] = {"OS", "Screen res", "Screen diagonal", "Processor", "Core", "Ram Size", "Sim count"};
-    char* TV[] = {"Type of screen", "Screen res", "Screen diagonal", "Processor", "Core", "3D"};
-    char* Toaster[] = {"Toast count", "Power", "Defrosting mode", "Heating mode"};
-    char* CoffeeMaker[] = {"Power", "Pressure", "Cap.maker"};
-    char* ElKettle[] = {"Power", "Volume", "Timer"};
-    char* Fridge[] = {"Volume", "Shelf count", "Noise lvl", "Multizone"};
-    char* Conditioner[] = {"Work mode", "Cooling power", "Heathing power", "Remote contol"};
-    char* Microwave[] = {"Power", "Lvls of power", "Volume", "Quickstart", "Timer"};
+    char* Tech[] = {"ИД", "Тип", "Дата", "Время", "День", "Сир. номер", "Производитель", "Дата поступл.", "Модель", "Артикул", "Страна изг.", "Цена"};
+    char* Computer[] = {"Процессор", "Ядер", "Тип ОП", "Размер ОП", "Разр. экрана", "Диагон. экрана"};
+    char* Mobile[] = {"ОС", "Разр. экрана", "Диагон. экрана", "Процессор", "Ядер", "Размер ОП", "Сим. карт"};
+    char* TV[] = {"Тип экрана", "Разр. экрана", "Диагон. экрана", "Процессор", "Ядер", "3Д режим"};
+    char* Toaster[] = {"Кол. тостов", "Мощность", "Разморозка", "Нагрев"};
+    char* CoffeeMaker[] = {"Мощность", "Давление", "Каппучино"};
+    char* ElKettle[] = {"Мощность", "Объем", "Таймер"};
+    char* Fridge[] = {"Объем", "Кол. полок", "Ур. шума", "Мультизона"};
+    char* Conditioner[] = {"Режим работы", "Охл. мощность", "Нагрев. мощность", "Уд. управление"};
+    char* Microwave[] = {"Мощность", "Ур. мощности", "Объем", "Быстр. старт", "Таймер"};
     int count = 0, childCount = 0;
     for (; count < 12; count++)
     {
         m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Tech[count]));
     }
 
-    if (type == "Computer")
+    if (type == "Компьютер")
     {
         for (; count < 18; count++)
         {
             m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Computer[childCount++]));
         }
     }
-    if (type == "MobilePhone")
+    if (type == "Моб.Телефон")
     {
         for (; count < 19; count++)
         {
             m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Mobile[childCount++]));
         }
     }
-    if (type == "TV")
+    if (type == "Телевизор")
     {
         for (; count < 18; count++)
         {
             m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(TV[childCount++]));
         }
     }
-    if (type == "Toaster")
+    if (type == "Тостер")
     {
         for (; count < 16; count++)
         {
             m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Toaster[childCount++]));
         }
     }
-    if (type == "CoffeeMaker")
+    if (type == "Кофемашина")
     {
         for (; count < 15; count++)
         {
             m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(CoffeeMaker[childCount++]));
         }
     }
-    if (type == "ElectricKettle")
+    if (type == "Эл.Чайник")
     {
         for (; count < 15; count++)
         {
             m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(ElKettle[childCount++]));
         }
     }
-    if (type == "Fridge")
+    if (type == "Холодильник")
     {
         for (; count < 16; count++)
         {
             m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Fridge[childCount++]));
         }
     }
-    if (type == "Conditioner")
+    if (type == "Кондиционер")
     {
         for (; count < 16; count++)
         {
             m_table -> setHorizontalHeaderItem(count, new QTableWidgetItem(Conditioner[childCount++]));
         }
     }
-    if (type == "Microwave")
+    if (type == "Микроволновка")
     {
         for (; count < 17; count++)
         {
@@ -394,39 +422,39 @@ void MainWindow::getHeaders(QString type)
 void MainWindow::getColsTable(QString type)
 {
 
-    if (type == "Computer")
+    if (type == "Компьютер")
     {
         m_table -> setColumnCount(18);
     }
-    if (type == "MobilePhone")
+    if (type == "Моб.Телефон")
     {
         m_table -> setColumnCount(19);
     }
-    if (type == "TV")
+    if (type == "Телевизор")
     {
         m_table -> setColumnCount(18);
     }
-    if (type == "Toaster")
+    if (type == "Тостер")
     {
         m_table -> setColumnCount(16);
     }
-    if (type == "CoffeeMaker")
+    if (type == "Кофемашина")
     {
         m_table -> setColumnCount(15);
     }
-    if (type == "ElectricKettle")
+    if (type == "Эл.Чайник")
     {
         m_table -> setColumnCount(15);
     }
-    if (type == "Fridge")
+    if (type == "Холодильник")
     {
         m_table -> setColumnCount(16);
     }
-    if (type == "Conditioner")
+    if (type == "Кондиционер")
     {
         m_table -> setColumnCount(16);
     }
-    if (type == "Microwave")
+    if (type == "Микроволновка")
     {
         m_table -> setColumnCount(17);
     }
@@ -439,19 +467,19 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
     {
         case SendingCodes::FAIL_AUTHENTIFICATION:
         {
-            m_auth.setError("Wrong Login or Password");
+            m_auth.setError("Неверный логин или пароль");
             break;
         }
         case SendingCodes::FAIL_REGISTRATION:
         {
-            m_regi.setError("Username already in use");
+            m_regi.setError("Данный логин уже существует");
             break;
         }
         case SendingCodes::SUCCESS_REGISTRATION:
         {
-            m_auth.setError("Authentification");
+            m_auth.setError("Аутентификация");
             m_auth.clearLines();
-            QMessageBox::information(nullptr, "Information", "Registration Complete", QMessageBox::Ok);
+            QMessageBox::information(nullptr, "Информация", "Регистрация успешно завершена", QMessageBox::Ok);
             m_regi.hide();
             m_auth.show();
             break;
@@ -464,25 +492,26 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
         }
         case SendingCodes::DATABASE_CREATION_FAIL:
         {
-            m_dbWindow.setError("This basename is already exist");
+            m_dbWindow.setError("База данных с таким имене уже существует");
             break;
         }
         case SendingCodes::DATABASE_CONNECTION_FAIL:
         {
-            m_dbWindow.setError("Wrong name or password");
+            m_dbWindow.setError("Неверный логин или пароль");
             break;
         }
         case SendingCodes::DATABASE_CREATION_SUCCESS:
         {
             m_dbWindow.clearLines();
             m_dbWindow.hide();
-            QMessageBox::information(nullptr, "Information", "Database created", QMessageBox::Ok);
+            QMessageBox::information(nullptr, "Информация", "База данных создана", QMessageBox::Ok);
             break;
         }
         case SendingCodes::DATABASE_CONNECTION_SUCCESS:
         {
             m_dbWindow.clearLines();
             m_dbWindow.hide();
+            subWindowGreeting -> hide();
             subWindowTypes -> show();
             break;
         }
@@ -494,32 +523,32 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
         }
         case SendingCodes::ADD_RECORD_FAIL:
         {
-            QMessageBox::information(nullptr, "Error", "Can't add record.", QMessageBox::Ok);
+            QMessageBox::information(nullptr, "Ошибка", "Добавить запись не удалось", QMessageBox::Ok);
             break;
         }
         case SendingCodes::CHANGE_RECORD_FAIL:
         {
-            QMessageBox::information(nullptr, "Error", "Can't changed records.", QMessageBox::Ok);
+            QMessageBox::information(nullptr, "Ошибка", "Изменить запись не удалось", QMessageBox::Ok);
             SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
             break;
         }
         case SendingCodes::DELETE_RECORD_SUCCESS:
         {
-            QMessageBox::information(nullptr, "Information", "Record deleted", QMessageBox::Ok);
+            QMessageBox::information(nullptr, "Информация", "Запись удалена", QMessageBox::Ok);
             m_table -> setRowCount(0);
             SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
             break;
         }
         case SendingCodes::DELETE_RECORD_FAIL:
         {
-            m_deleteWidget -> setError("Record not found");
+            m_deleteWidget -> setError("Запись не найдена");
             subWindowDelete -> show();
             break;
         }
         case SendingCodes::FIND_RECORD_FAIL:
         {
             SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
-            m_findWidget -> setError("Record not found");
+            m_findWidget -> setError("Запись не найдена");
             subWindowFind -> show();
             break;
         }
@@ -536,7 +565,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                 m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
             }
 
-            if (m_types -> getType() == "Computer")
+            if (m_types -> getType() == "Компьютер")
             {
                 for (int i = 0; i < 6; i++)
                 {
@@ -545,7 +574,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
-            if (m_types -> getType() == "MobilePhone")
+            if (m_types -> getType() == "Моб.Телефон")
             {
                 for (int i = 0; i < 7; i++)
                 {
@@ -554,7 +583,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
-            if (m_types -> getType() == "TV")
+            if (m_types -> getType() == "Телевизор")
             {
                 for (int i = 0; i < 6; i++)
                 {
@@ -563,7 +592,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
-            if (m_types -> getType() == "Toaster")
+            if (m_types -> getType() == "Тостер")
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -572,7 +601,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
-            if (m_types -> getType() == "CoffeeMaker")
+            if (m_types -> getType() == "Кофемашина")
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -581,7 +610,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
-            if (m_types -> getType() == "ElectricKettle")
+            if (m_types -> getType() == "Эл.Чайник")
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -590,7 +619,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
-            if (m_types -> getType() == "Fridge")
+            if (m_types -> getType() == "Холодильник")
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -599,7 +628,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
-            if (m_types -> getType() == "Conditioner")
+            if (m_types -> getType() == "Кондиционер")
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -608,7 +637,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
                     m_table -> setItem(compRecordsCount, count++, new QTableWidgetItem(field.c_str()));
                 }
             }
-            if (m_types -> getType() == "Microwave")
+            if (m_types -> getType() == "Микроволновка")
             {
                 for (int i = 0; i < 5; i++)
                 {
@@ -626,7 +655,7 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
             SendToServer(SendingCodes::GET_RECORDS, m_types -> getType() + " " + m_dbWindow.getName());
             break;
         }
-        default: qFatal("Error. Server send wrong data.");
+        default: qFatal("Ошибка, сервер отправил ошибочные данные");
     }
 }
 

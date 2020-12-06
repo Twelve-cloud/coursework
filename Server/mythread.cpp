@@ -45,7 +45,7 @@ void MyThread::run()
             case 3:
                 std::exit(Error::FAIL_EXEC);
             default:
-                std::cout << "Incorrect number. Try again." << std::endl; system("pause");
+                std::cout << Rus("Некорректное число. Попробуйте еще раз.") << std::endl; system("pause");
         }
     } while(!isEnd);
 }
@@ -84,7 +84,7 @@ void MyThread::account_management_menu()
             case 2:
             {
                 std::string login;
-                std::cout << "Enter login: "; std::getline(std::cin, login);
+                std::cout << Rus("Введите логин: "); std::getline(std::cin, login);
                 m_tcpServer -> getDatabase() -> remObject(login);
                 m_tcpServer -> getDatabase() -> rewrite();
                 system("pause"); break;
@@ -92,7 +92,7 @@ void MyThread::account_management_menu()
             case 3:
             {
                 std::string login;
-                std::cout << "Enter login: "; std::getline(std::cin, login);
+                std::cout << Rus("Введите логин: "); std::getline(std::cin, login);
                 m_tcpServer -> getDatabase() -> changeObject(login);
                 m_tcpServer -> getDatabase() -> rewrite();
                 system("pause"); break;
@@ -107,7 +107,7 @@ void MyThread::account_management_menu()
             {
                 system("cls");
                 std::string target;
-                std::cout << "Enter data: ";
+                std::cout << Rus("Введите данные: ");
                 char c;
                 do
                 {
@@ -135,7 +135,7 @@ void MyThread::account_management_menu()
                 do
                 {
                     system("cls");
-                    std::cout << "Rewrite file? Y/N";
+                    std::cout << Rus("Перезаписать файл? Y/N");
                     c = getch();
                 } while (c != 'Y' && c != 'N');
                 if (c == 'Y')
@@ -149,7 +149,7 @@ void MyThread::account_management_menu()
             case 8:
                 isBack = true; break;
             default:
-                std::cout << "Incorrect number. Try again." << std::endl; system("pause");
+                std::cout << Rus("Некорректное число. Попробуйте еще раз.") << std::endl; system("pause");
         }
     } while (!isBack);
 }
@@ -182,20 +182,22 @@ void MyThread::techbase_management_menu()
             case 1:
             {
                 std::string dbname, dbpass;
-                std::cout << "Enter database name: ";     std::getline(std::cin, dbname);
-                std::cout << "Enter database password: "; std::getline(std::cin, dbpass);
+                std::cout << Rus("Введите имя БД: ");     std::cin >> std::setw(15) >> dbname;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << Rus("Введите пароль: ");     std::cin >> std::setw(15) >> dbpass;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 m_tcpServer -> getTechBase() -> push_back(new TechBase(dbname, dbpass));
                 m_tcpServer -> getTechBase() -> rewriteDB();
                 std::ofstream createFile(dbname + ".txt"); createFile.close();
-                std::cout << "Database successfully added." << std::endl;
+                std::cout << Rus("База данных успешно создана.") << std::endl;
                 system("pause"); break;
             }
             case 2:
             {
                 bool isFound = false;
                 std::string dbname, dbpass;
-                std::cout << "Enter database name: ";     std::getline(std::cin, dbname);
-                std::cout << "Enter database password: "; std::getline(std::cin, dbpass);
+                std::cout << Rus("Введите имя БД: ");  std::getline(std::cin, dbname);
+                std::cout << Rus("Введите пароль: ");  std::getline(std::cin, dbpass);
                 for (const auto& i : *(m_tcpServer -> getTechBase()))
                 {
                     if (i -> getFilename() == dbname && i -> getPassword() == dbpass)
@@ -207,7 +209,7 @@ void MyThread::techbase_management_menu()
                 }
                 if (!isFound)
                 {
-                    std::cout << "Wrong database name or password" << std::endl;
+                    std::cout << Rus("Неверное имя или пароль") << std::endl;
                     system("pause");
                 }
                 break;
@@ -215,7 +217,7 @@ void MyThread::techbase_management_menu()
             case 3:
             {
                 std::string dbname;
-                std::cout << "Enter name: "; std::getline(std::cin, dbname);
+                std::cout << Rus("Введите имя: "); std::getline(std::cin, dbname);
                 m_tcpServer -> getTechBase() -> remDb(dbname);
                 m_tcpServer -> getTechBase() -> rewriteDB();
                 system("pause"); break;
@@ -223,7 +225,7 @@ void MyThread::techbase_management_menu()
             case 4:
             {
                 std::string dbname;
-                std::cout << "Enter name: "; std::getline(std::cin, dbname);
+                std::cout << Rus("Введите имя: "); std::getline(std::cin, dbname);
                 m_tcpServer -> getTechBase() -> changeDbName(dbname);
                 m_tcpServer -> getTechBase() -> rewriteDB();
                 system("pause"); break;
@@ -241,7 +243,7 @@ void MyThread::techbase_management_menu()
                 do
                 {
                     system("cls");
-                    std::cout << "Rewrite file? Y/N";
+                    std::cout << Rus("Перезаписать файл? Y/N");
                     c = getch();
                 } while (c != 'Y' && c != 'N');
                 if (c == 'Y')
@@ -253,7 +255,7 @@ void MyThread::techbase_management_menu()
             case 7:
                 isBack = true; break;
             default:
-                std::cout << "Incorrect number. Try again." << std::endl; system("pause");
+                std::cout << Rus("Некорректное число. Попробуйте еще раз.") << std::endl; system("pause");
         }
     } while (!isBack);
 }
@@ -313,14 +315,14 @@ void MyThread::tech_management_menu(TechBase* DATABASE)
             }
             case 2:
             {
-                uint32_t ID; getnumber(ID, "ID: ");
+                uint32_t ID; getnumber(ID, Rus("ИД: "));
                 DATABASE -> remObject(ID);
                 DATABASE -> rewriteDB();
                 system("pause"); break;
             }
             case 3:
             {
-                uint32_t ID; getnumber(ID, "ID: ");
+                uint32_t ID; getnumber(ID, Rus("ИД: "));
                 DATABASE -> changeObject(ID);
                 DATABASE -> rewriteDB();
                 system("pause"); break;
@@ -335,7 +337,7 @@ void MyThread::tech_management_menu(TechBase* DATABASE)
             {
                 system("cls");
                 std::string target;
-                std::cout << "Enter data: ";
+                std::cout << Rus("Введите данные: ");
                 char c;
                 do
                 {
@@ -358,12 +360,12 @@ void MyThread::tech_management_menu(TechBase* DATABASE)
             }
             case 6:
             {
-                DATABASE -> sort();
+                DATABASE -> sort("ИД");
                 uint32_t c;
                 do
                 {
                     system("cls");
-                    std::cout << "Rewrite file? Y/N";
+                    std::cout << Rus("Перезаписать файл? Y/N");
                     c = getch();
                 } while (c != 'Y' && c != 'N');
                 if (c == 'Y')
@@ -373,11 +375,9 @@ void MyThread::tech_management_menu(TechBase* DATABASE)
                 break;
             }
             case 7:
-                system((DATABASE -> getFilename() + ".txt").c_str()); break;
-            case 8:
                 isBack = true; break;
             default:
-                std::cout << "Incorrect number. Try again." << std::endl; system("pause");
+                std::cout << Rus("Некорректное число. Попробуйте еще раз.") << std::endl; system("pause");
         }
     } while (!isBack);
 }

@@ -1,4 +1,4 @@
- #include "server.h"
+#include "server.h"
 #include "constants.h"
 #include <QString>
 #include <windows.h>
@@ -14,11 +14,12 @@ MyServer::MyServer(const QString& hostname, uint32_t port, QWidget* parent): QWi
     if (!m_tcpServer -> listen(QHostAddress(hostname), port))
     {
         m_tcpServer -> close();
-        qFatal("Server not listen");
+        std::cout << Rus("Сервер не находится в режиме прослушивания несущей частоты") << std::endl;
+        std::exit(-1);
     }
     else
     {
-        std::cout << "Server listen" << std::endl << std::endl;
+        std::cout << Rus("Сервер находится в режиме прослушивания несущей частоты") << std::endl << std::endl;
         system("pause");
     }
 
@@ -35,14 +36,14 @@ void MyServer::slotNewConnection()
     connect(SClients[sd], SIGNAL(readyRead()), this, SLOT(slotReadClient()));
 }
 
-void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString string)
+void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, std::string string)
 {
     switch(choice)
     {
         case SendingCodes::AUTHENTIFICATION:
         {
             char login[64], password[64];
-            getWords(3, string.toStdString(), login, password);
+            getWords(3, string, login, password);
             if(DATABASE -> findObject(login, password))
             {
                 sendToClient(clientSocket, SendingCodes::SUCCESS_AUTHENTIFICATION, "");
@@ -56,7 +57,7 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
         case SendingCodes::REGISTRATION:
         {
             char login[64], password[64];
-            getWords(3, string.toStdString(), login, password);
+            getWords(3, string, login, password);
             if (!DATABASE -> findObject(login))
             {
                 sendToClient(clientSocket, SendingCodes::SUCCESS_REGISTRATION, "");
@@ -72,7 +73,7 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
         case SendingCodes::CREATE_DB:
         {
             char dbname[64], dbpass[64];
-            getWords(3, string.toStdString(), dbname, dbpass);
+            getWords(3, string, dbname, dbpass);
             if (!TECH_BASE -> findDbName(dbname))
             {
                 sendToClient(clientSocket, SendingCodes::DATABASE_CREATION_SUCCESS, "");
@@ -88,7 +89,7 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
         case SendingCodes::CONNECT_DB:
         {
             char dbname[64], dbpass[64];
-            getWords(3, string.toStdString(), dbname, dbpass);
+            getWords(3, string, dbname, dbpass);
             if(TECH_BASE -> findDbName(dbname, dbpass))
             {
                 sendToClient(clientSocket, SendingCodes::DATABASE_CONNECTION_SUCCESS, "");
@@ -101,12 +102,12 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
         }
         case SendingCodes::ADD_RECORD:
         {
-            std::map<std::string, Tech*> create_type = {{"Computer", new Computer},{"MobilePhone", new MobilePhone}, {"TV", new TV}, {"Toaster", new Toaster},
-                                                        {"CoffeeMaker", new CoffeMaker}, {"ElectricKettle", new ElKettle}, {"Fridge", new Fridge},
-                                                        {"Conditioner", new Conditioner}, {"Microwave", new Microwawe}};
+            std::map<std::string, Tech*> create_type =  {{Rus("Компьютер"), new Computer},{Rus("Моб.Телефон"), new MobilePhone}, {Rus("Телевизор"), new TV},
+                                                        {Rus("Тостер"), new Toaster}, {Rus("Кофемашина"), new CoffeMaker}, {Rus("Эл.Чайник"), new ElKettle},
+                                                        {Rus("Холодильник"), new Fridge}, {Rus("Кондиционер"), new Conditioner}, {Rus("Микроволновка"), new Microwawe}};
             char dbname[64], type[64];
             uint32_t index = -1;
-            getWords(3, string.toStdString(), dbname, type);
+            getWords(3, string, dbname, type);
             if(TECH_BASE -> findDbName(dbname, index))
             {
                 (*TECH_BASE)[index] -> addObject(create_type[type]->getTypeClass(), 0);
@@ -121,14 +122,15 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
         case SendingCodes::DELETE_RECORD:
         {
             char dbname[64], type[64], id[64];
-            getWords(4, string.toStdString(), dbname, type, id);
+            getWords(4, string, dbname, type, id);
             uint32_t ID = atoi(id), index = -1;
             bool isFound = false;
             if(TECH_BASE -> findDbName(dbname, index))
             {
                 for (Tech* i : *TECH_BASE -> getDB(index))
                 {
-                    if (i -> getID() == ID && i -> getType() == type)
+                    std::string record_type = Rus(i -> getType().c_str());
+                    if (i -> getID() == ID && record_type == type)
                     {
                         (*TECH_BASE)[index] -> remObject(ID);
                         sendToClient(clientSocket, SendingCodes::DELETE_RECORD_SUCCESS, "");
@@ -149,17 +151,15 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
         }
         case SendingCodes::CHANGE_RECORD:
         {
-            std::map<std::string, Tech*> create_type = {{"Computer", new Computer},{"MobilePhone", new MobilePhone}, {"TV", new TV}, {"Toaster", new Toaster},
-                                                        {"CoffeeMaker", new CoffeMaker}, {"ElectricKettle", new ElKettle}, {"Fridge", new Fridge},
-                                                        {"Conditioner", new Conditioner}, {"Microwave", new Microwawe}};
             char dbname[64], type[64], id[64];
-            std::string stringToReplace = getWords(4, string.toStdString(), dbname, type, id);
+            std::string stringToReplace = getWords(4, string, dbname, type, id);
             uint32_t ID = atoi(id), index = -1;
             if(TECH_BASE -> findDbName(dbname, index))
             {
                 for (Tech* i : *TECH_BASE -> getDB(index))
                 {
-                    if (i -> getID() == ID && i -> getType() == type)
+                    std::string record_type = Rus(i -> getType().c_str());
+                    if (i -> getID() == ID && record_type == type)
                     {
                         if (!(i -> replaceObject(stringToReplace)))
                         {
@@ -180,14 +180,15 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
         {
             char dbname[64], type[64], id[64];
             std::string stringToSend;
-            getWords(4, string.toStdString(), dbname, type, id);
+            getWords(4, string, dbname, type, id);
             uint32_t ID = atoi(id), index = -1;
             bool isFound = false;
             if(TECH_BASE -> findDbName(dbname, index))
             {
                 for (Tech* i : *TECH_BASE -> getDB(index))
                 {
-                    if (i -> getID() == ID && i -> getType() == type)
+                    std::string record_type = Rus(i -> getType().c_str());
+                    if (i -> getID() == ID && record_type == type)
                     {
                         i -> getStringToSend(stringToSend);
                         sendToClient(clientSocket, SendingCodes::GET_RECORDS_SUCCESS, QString().fromStdString(stringToSend));
@@ -212,12 +213,13 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
             char type[64], dbname[64];
             uint32_t index = -1;
             std::string stringToSend;
-            getWords(3, string.toStdString(), type, dbname);
+            getWords(3, string, type, dbname);
             if (TECH_BASE -> findDbName(dbname, index))
             {
                 for (Tech* i : *TECH_BASE -> getDB(index))
                 {
-                    if (i -> getType() == type)
+                    std::string record_type = Rus(i -> getType().c_str());
+                    if (record_type == type)
                     {
                         i -> getStringToSend(stringToSend);
                         sendToClient(clientSocket, SendingCodes::GET_RECORDS_SUCCESS, QString().fromStdString(stringToSend));
@@ -232,15 +234,15 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, QString st
             char type[64], dbname[64];
             uint32_t index = -1;
             std::string stringToSend;
-            getWords(3, string.toStdString(), type, dbname);
+            getWords(3, string, type, dbname);
             if (TECH_BASE -> findDbName(dbname, index))
             {
-                (*TECH_BASE)[index] ->sort();
+                (*TECH_BASE)[index] -> sort(type);
                 sendToClient(clientSocket, SendingCodes::SORT_RECORDS_SUCCESS, "");
             }
             break;
         }
-        default: qDebug("Error. Client send wrong data.");
+        default: std::cout << Rus("Ошибка. Клиент отправить ошибочные данные") << std::endl;
     }
 }
 
@@ -271,7 +273,8 @@ void MyServer::slotReadClient()  // данные могут идти частя�
             break;
         }
         in >> choice >> string; // считываем данные
-        handleRequest(clientSocket, choice, string);
+        std::string stringToHandle = Rus(string.toStdString().c_str());
+        handleRequest(clientSocket, choice, stringToHandle);
         m_nextBlockSize = 0;
     }
 

@@ -24,7 +24,7 @@ public:
     MyServer(const QString& hostname, std::uint32_t port, QWidget* parent = nullptr);
     void connectToDatabase(AccountBase& db) { DATABASE = &db; DATABASE -> readFile(); };
     void connectToDbNames(DbNamesDatabase& db) { TECH_BASE = &db; TECH_BASE -> readFile(); }
-    void handleRequest(QTcpSocket* clientSocket, qint16 choice, QString string);
+    void handleRequest(QTcpSocket* clientSocket, qint16 choice, std::string string);
     AccountBase* getDatabase() const { return DATABASE; }
     DbNamesDatabase* getTechBase() const { return TECH_BASE; }
 

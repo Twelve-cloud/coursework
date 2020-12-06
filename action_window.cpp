@@ -6,15 +6,15 @@ ActionWindow::ActionWindow(QWidget *parent) : QWidget(parent)
 {
     QWidget::setFixedSize(QSize(240, 640));
 
-    m_addRecord    = new QPushButton("Add record");
+    m_addRecord    = new QPushButton("Добавить запись");
     m_addRecord    -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_deleteRecord = new QPushButton("Delete record");
+    m_deleteRecord = new QPushButton("Удалить запись");
     m_deleteRecord -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_changeRecord = new QPushButton("Change record");
+    m_changeRecord = new QPushButton("Изменить запись");
     m_changeRecord -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_findRecord   = new QPushButton("Find record");
+    m_findRecord   = new QPushButton("Найти запись");
     m_findRecord   -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_sortRecords  = new QPushButton("Sort records");
+    m_sortRecords  = new QPushButton("Сортировать записи");
     m_sortRecords  -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout  *vbox = new QVBoxLayout(this);

@@ -5,18 +5,18 @@
 
 AuthWindow::AuthWindow(QWidget *parent) : QWidget(parent) {
     QWidget::setFixedSize(QSize(480, 360));
-    setWindowTitle("Authentification");
+    setWindowTitle("Аутентификация");
 
-    m_generalLbl    = new QLabel("Authentification");
+    m_generalLbl    = new QLabel("Аутентификация");
     m_generalLbl -> setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    m_loginLbl      = new QLabel("Login: ");
-    m_passwordLbl   = new QLabel("Password: ");
+    m_loginLbl      = new QLabel("Логин: ");
+    m_passwordLbl   = new QLabel("Пароль: ");
     m_loginLine     = new QLineEdit(this);
     m_passwordLine  = new QLineEdit(this);
     m_passwordLine -> setEchoMode(QLineEdit::Password);
-    m_loginBtn      = new QPushButton("&Log In");
+    m_loginBtn      = new QPushButton("&Войти");
     m_loginBtn -> setShortcut(Qt::Key_Return);
-    m_registerBtn   = new QPushButton("&Register");
+    m_registerBtn   = new QPushButton("&Регистрация");
 
     QHBoxLayout *gen_label = new QHBoxLayout;
     gen_label -> addWidget(m_generalLbl,  Qt::Alignment(Qt::AlignHCenter | Qt::AlignVCenter));
@@ -71,11 +71,11 @@ bool AuthWindow::isEmptyLine()
 void AuthWindow::setError(const QString& error_str)
 {
     m_generalLbl -> setText(error_str);
-    if (error_str != "Authentification") {
+    if (error_str != "Аутентификация") {
         m_generalLbl -> setStyleSheet("color: red");
     }
 
-    if (error_str == "Authentification") {
+    if (error_str == "Аутентификация") {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
     }
 }

@@ -8,6 +8,8 @@
 #include "action_window.h"
 #include "delete_widget.h"
 #include "find_widget.h"
+#include "sort_widget.h"
+#include "greetingwindow.h"
 #include "incryption.h"
 #include "constants.h"
 #include <QTcpSocket>
@@ -39,7 +41,9 @@ private slots:
     void connectDB();
     void exit();
     void slot_menu_actions_call();
-    void slot_sort();
+    void slot_sortRecordsClicked();
+    void slot_sortTypeClicked();
+    void slot_sortCancelClicked();
     void slot_deleteOkClicked();
     void slot_deleteCancelClicked();
     void slot_deleteRecordClicked();
@@ -71,9 +75,13 @@ private:
     QMdiSubWindow* subWindowTable;
     QMdiSubWindow* subWindowDelete;
     QMdiSubWindow* subWindowFind;
+    QMdiSubWindow* subWindowSort;
+    QMdiSubWindow* subWindowGreeting;
 
     DeleteWidget* m_deleteWidget;
     FindWidget* m_findWidget;
+    SortWidget* m_sortWidget;
+    GreetingWindow* m_greetingWidget;
 
     QMenu* m_menu[MAX_MENUS];
     std::vector<bool> rowChanged;

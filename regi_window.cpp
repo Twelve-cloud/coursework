@@ -3,24 +3,26 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 
+#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
+
 RegiWindow::RegiWindow(QWidget *parent) : QWidget(parent) {
     QWidget::setFixedSize(QSize(480, 360));
-    setWindowTitle("Registration");
+    setWindowTitle("Регистрация");
 
-    m_generalLbl    = new QLabel("Registration");
+    m_generalLbl    = new QLabel("Регистрация");
     m_generalLbl    -> setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    m_loginLbl      = new QLabel("Login: ");
-    m_passwordLbl   = new QLabel("Password: ");
-    m_confirmLbl    = new QLabel("Confirm: ");
+    m_loginLbl      = new QLabel("Логин: ");
+    m_passwordLbl   = new QLabel("Пароль: ");
+    m_confirmLbl    = new QLabel("Подтвердите пароль: ");
     m_loginLine     = new QLineEdit(this);
     m_passwordLine  = new QLineEdit(this);
     m_passwordLine  -> setEchoMode(QLineEdit::Password);
     m_confirmLine   = new QLineEdit(this);
     m_confirmLine   -> setEchoMode(QLineEdit::Password);
-    m_registerBtn   = new QPushButton("&Register");
+    m_registerBtn   = new QPushButton("&Зарегестрироваться");
     m_registerBtn   -> setShortcut(Qt::Key_Return);
-    m_clearBtn      = new QPushButton("&Clear");
-    m_backBtn       = new QPushButton("&Back");
+    m_clearBtn      = new QPushButton("&Очистить");
+    m_backBtn       = new QPushButton("&Назад");
 
     QHBoxLayout* gen_label = new QHBoxLayout;
     gen_label -> addWidget(m_generalLbl,  Qt::Alignment(Qt::AlignHCenter | Qt::AlignVCenter));
@@ -58,7 +60,7 @@ void RegiWindow::Registration2_clicked()
     {
         if (!ch.isDigit() && !ch.isLetter())
         {
-            setError("Login must contain only digits and letters");
+            setError("Логин должен содержать только цифры или буквы");
             isWrong = true;
         }
     }
@@ -67,15 +69,15 @@ void RegiWindow::Registration2_clicked()
     {
         if (!ch.isDigit() && !ch.isLetter())
         {
-            setError("Password must contain only digits and letters");
+            setError("Пароль должен содержать только цифры или буквы");
             isWrong = true;
         }
     }
 
     if (m_userLog.size() < 6 || m_userLog.size() > 15) {
-        setError("Login must be between 6 and 15 characters");
+        setError("Логин должен быть от 6 до 15 символов");
     } else if (m_userPass.size() < 6 || m_userPass.size() > 15) {
-        setError("Password must be between 6 and 15 characters");
+        setError("Пароль должен быть от 6 до 15 символов");
     } else if (!isWrong){
         emit registration2_clicked();
     }
@@ -107,7 +109,7 @@ bool RegiWindow::checkPass() {
 }
 
 void RegiWindow::clearLines() {
-    setError("Registration");
+    setError("Регистрация");
     m_loginLine -> clear();
     m_passwordLine -> clear();
     m_confirmLine -> clear();
@@ -115,11 +117,11 @@ void RegiWindow::clearLines() {
 
 void RegiWindow::setError(const QString& error_str) {
     m_generalLbl -> setText(error_str);
-    if (error_str != "Registration") {
+    if (error_str != "Регистрация") {
         m_generalLbl -> setStyleSheet("color: red");
     }
 
-    if (error_str == "Registration") {
+    if (error_str == "Регистрация") {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
     }
 }

@@ -6,23 +6,23 @@ TypeWindow::TypeWindow(QWidget *parent) : QWidget(parent)
 {
     QWidget::setFixedSize(QSize(240, 640));
 
-    m_computer   = new QPushButton("Computer");
+    m_computer   = new QPushButton("Компьютер");
     m_computer -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_mobilePhone      = new QPushButton("Mobile Phone");
+    m_mobilePhone      = new QPushButton("Мобильный телефон");
     m_mobilePhone -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_tv       = new QPushButton("TV");
+    m_tv       = new QPushButton("Телевизор");
     m_tv -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_toaster = new QPushButton("Toaster");
+    m_toaster = new QPushButton("Тостер");
     m_toaster -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_coffeMaker = new QPushButton("Coffee Maker");
+    m_coffeMaker = new QPushButton("Кофемашина");
     m_coffeMaker -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_elKettle = new QPushButton("Electric Kettle");
+    m_elKettle = new QPushButton("Электрический чайник");
     m_elKettle -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_fridge = new QPushButton("Fridge");
+    m_fridge = new QPushButton("Холодильник");
     m_fridge -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_conditioner = new QPushButton("Conditioner");
+    m_conditioner = new QPushButton("Кондиционер");
     m_conditioner -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_microwave = new QPushButton("Microwave");
+    m_microwave = new QPushButton("Микроволновка");
     m_microwave -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout  *vbox = new QVBoxLayout(this);
@@ -53,7 +53,7 @@ void TypeWindow::computerButton_clicked()
 {
     setStandartColor();
     m_computer -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "Computer";
+    type = "Компьютер";
     emit menu_actions_call();
 }
 
@@ -61,7 +61,7 @@ void TypeWindow::mobile_phoneButton_clicked()
 {
     setStandartColor();
     m_mobilePhone -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "MobilePhone";
+    type = "Моб.Телефон";
     emit menu_actions_call();
 }
 
@@ -69,7 +69,7 @@ void TypeWindow::tvButton_clicked()
 {
     setStandartColor();
     m_tv -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "TV";
+    type = "Телевизор";
     emit menu_actions_call();
 }
 
@@ -77,7 +77,7 @@ void TypeWindow::toasterButton_clicked()
 {
     setStandartColor();
     m_toaster -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "Toaster";
+    type = "Тостер";
     emit menu_actions_call();
 }
 
@@ -85,7 +85,7 @@ void TypeWindow::coffee_makerButton_clicked()
 {
     setStandartColor();
     m_coffeMaker -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "CoffeeMaker";
+    type = "Кофемашина";
     emit menu_actions_call();
 }
 
@@ -93,7 +93,7 @@ void TypeWindow::elkettleButton_clicked()
 {
     setStandartColor();
     m_elKettle -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "ElectricKettle";
+    type = "Эл.Чайник";
     emit menu_actions_call();
 }
 
@@ -101,7 +101,7 @@ void TypeWindow::fridgeButton_clicked()
 {
     setStandartColor();
     m_fridge -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "Fridge";
+    type = "Холодильник";
     emit menu_actions_call();
 }
 
@@ -109,7 +109,7 @@ void TypeWindow::conditionerButton_clicked()
 {
     setStandartColor();
     m_conditioner -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "Conditioner";
+    type = "Кондиционер";
     emit menu_actions_call();
 }
 
@@ -117,7 +117,7 @@ void TypeWindow::microwaveButton_clicked()
 {
     setStandartColor();
     m_microwave -> setStyleSheet("background-color: rgb(65, 65, 65);");
-    type = "Microwave";
+    type = "Микроволновка";
     emit menu_actions_call();
 }
 

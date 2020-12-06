@@ -1,4 +1,7 @@
 #include "sysfunction.h"
+#include "account.h"
+#include "tech_base.h"
+#include "tech.h"
 #include <string>
 #include <cstdarg>
 #include <algorithm>
@@ -22,4 +25,13 @@ std::string getWords(int count, std::string str, ...)
     va_end(list);
 
     return str;
+}
+
+uint32_t checkNegative(const char* str)
+{
+    int32_t posivite = atoi(str);
+    if (posivite < 0)
+        return 0;
+
+    return posivite;
 }

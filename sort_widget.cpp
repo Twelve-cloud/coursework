@@ -8,14 +8,19 @@ SortWidget::SortWidget(QWidget *parent) : QWidget(parent)
 
     m_IdBtn = new QPushButton("ИД");
     m_IdBtn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     m_PriceBtn = new QPushButton("Цена");
     m_PriceBtn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     m_DateBtn = new QPushButton("Дата");
     m_DateBtn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     m_SerialBtn = new QPushButton("Серия");
     m_SerialBtn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     m_ManufacturerBtn = new QPushButton("Производитель");
     m_ManufacturerBtn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     m_cancelBtn = new QPushButton("Назад");
     m_cancelBtn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 

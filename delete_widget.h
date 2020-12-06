@@ -7,11 +7,12 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-class DeleteWidget : public QWidget
+class DeleteWidget : public QWidget // окно появляющееся при нажатии удалить запись
 {
     Q_OBJECT
 public:
     explicit DeleteWidget(QWidget *parent = nullptr);
+
     QString getID() { return m_ID; }
     void setError(const QString& error_str);
     bool isEmptyLine();

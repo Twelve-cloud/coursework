@@ -7,11 +7,12 @@
 #include <QString>
 #include <QLineEdit>
 
-class AuthWindow : public QWidget
+class AuthWindow : public QWidget // окно аутентификации
 {
     Q_OBJECT
 public:
     explicit AuthWindow(QWidget *parent = nullptr);
+
     QString& getLogin() { return m_userLog; };
     QString& getPassword() { return m_userPass; }
     void setError(const QString& error_str);

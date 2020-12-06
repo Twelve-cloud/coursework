@@ -41,13 +41,13 @@ int main(int argc, char* argv[])
     nt.SetDelimRow(true, '-');
     nt.SetDelimCol(true, '|');
 
-    std::string filename = "db_accounts.txt"; //создаю файл для записи данных
-    AccountBase DATABASE(filename); // создаю БД
+    std::string filename = "db_accounts.txt";
+    AccountBase DATABASE(filename);
 
     std::string dbname = "db_names.txt";
     DbNamesDatabase NAMES_BASE(dbname);
 
-    MyServer tcp_server("127.0.0.1", 1280); //создаю сервер
+    MyServer tcp_server("127.0.0.1", 1280);
     tcp_server.connectToDatabase(DATABASE);
     tcp_server.connectToDbNames(NAMES_BASE);
 

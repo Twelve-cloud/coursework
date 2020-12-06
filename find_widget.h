@@ -7,11 +7,12 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-class FindWidget : public QWidget
+class FindWidget : public QWidget // окно появляющееся при нажатии поиск записи
 {
     Q_OBJECT
 public:
     explicit FindWidget(QWidget *parent = nullptr);
+
     QString getID() { return m_ID; }
     void setError(const QString& error_str);
     bool isEmptyLine();

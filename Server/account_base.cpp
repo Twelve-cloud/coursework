@@ -1,16 +1,15 @@
 #include "streamtable.h"
 #include "account_base.h"
+#include "sysfunction.h"
 #include "account.h"
 #include <iostream>
 #include <QString>
 #include <QTextCodec>
 #include <algorithm>
 
-
 extern StreamTable st;
-#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
 
-bool compare(const Account* obj1, const Account* obj2) // функция для сортировки
+bool compare(const Account* obj1, const Account* obj2)
 {
     return obj1 -> getLogin() > obj2 -> getLogin();
 }
@@ -122,6 +121,7 @@ void AccountBase::readFile()
 
     while (m_fstream >> login >> password)
     {
+        ENCRYPTION_CYCLE(password, KEY)
         Account* object = new Account(login, password);
         push_back(object);
         if (m_fstream.eof()) break;
@@ -133,10 +133,13 @@ void AccountBase::readFile()
 void AccountBase::rewrite()
 {
     m_fstream.open(m_filename, std::ios_base::out);
+    std::string incrypt_password;
 
     for (const auto& object : *this)
     {
-        m_fstream << object -> getLogin() << std::endl << object -> getPassword() << std::endl;
+        incrypt_password = object -> getPassword();
+        ENCRYPTION_CYCLE(incrypt_password, KEY)
+        m_fstream << object -> getLogin() << std::endl << incrypt_password << std::endl;
     }
 
     m_fstream.close();

@@ -3,18 +3,23 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 
-AuthWindow::AuthWindow(QWidget *parent) : QWidget(parent) {
+AuthWindow::AuthWindow(QWidget *parent) : QWidget(parent)
+{
     QWidget::setFixedSize(QSize(480, 360));
     setWindowTitle("Аутентификация");
 
     m_generalLbl    = new QLabel("Аутентификация");
     m_generalLbl -> setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
     m_loginLbl      = new QLabel("Логин: ");
-    m_passwordLbl   = new QLabel("Пароль: ");
     m_loginLine     = new QLineEdit(this);
+
+    m_passwordLbl   = new QLabel("Пароль: ");
     m_passwordLine  = new QLineEdit(this);
+
     m_passwordLine -> setEchoMode(QLineEdit::Password);
     m_loginBtn      = new QPushButton("&Войти");
+
     m_loginBtn -> setShortcut(Qt::Key_Return);
     m_registerBtn   = new QPushButton("&Регистрация");
 
@@ -40,23 +45,28 @@ AuthWindow::AuthWindow(QWidget *parent) : QWidget(parent) {
     setLayout(main_layout);
 }
 
-void AuthWindow::Registration_clicked() {
+void AuthWindow::Registration_clicked()
+{
     emit registration_clicked();
 }
 
-void AuthWindow::Login_clicked() {
+void AuthWindow::Login_clicked()
+{
     emit login_clicked();
 }
 
-void AuthWindow::LoginLine_edited() {
+void AuthWindow::LoginLine_edited()
+{
     m_userLog = m_loginLine -> text();
 }
 
-void AuthWindow::PasswordLine_edited() {
+void AuthWindow::PasswordLine_edited()
+{
     m_userPass = m_passwordLine -> text();
 }
 
-void AuthWindow::clearLines() {
+void AuthWindow::clearLines()
+{
     m_loginLine -> clear();
     m_passwordLine -> clear();
 }
@@ -71,11 +81,13 @@ bool AuthWindow::isEmptyLine()
 void AuthWindow::setError(const QString& error_str)
 {
     m_generalLbl -> setText(error_str);
-    if (error_str != "Аутентификация") {
+    if (error_str != "Аутентификация")
+    {
         m_generalLbl -> setStyleSheet("color: red");
     }
 
-    if (error_str == "Аутентификация") {
+    if (error_str == "Аутентификация")
+    {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
     }
 }

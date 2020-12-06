@@ -1,11 +1,11 @@
 #include "server.h"
+#include "sysfunction.h"
 #include "constants.h"
 #include <QString>
 #include <windows.h>
 #include <cstring>
 #include <iostream>
 
-std::string getWords(int count, std::string str, ...);
 
 MyServer::MyServer(const QString& hostname, uint32_t port, QWidget* parent): QWidget(parent), m_nextBlockSize(0)
 {
@@ -30,7 +30,7 @@ void MyServer::slotNewConnection()
 {
     QTcpSocket* clientSocket = m_tcpServer -> nextPendingConnection();
     uint32_t sd = clientSocket -> socketDescriptor();
-    SClients[sd] = clientSocket; std::cout << "\a";
+    SClients[sd] = clientSocket;
 
     connect(SClients[sd], SIGNAL(disconnected()), clientSocket, SLOT(deleteLater()));
     connect(SClients[sd], SIGNAL(readyRead()), this, SLOT(slotReadClient()));
@@ -103,8 +103,8 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, std::strin
         case SendingCodes::ADD_RECORD:
         {
             std::map<std::string, Tech*> create_type =  {{Rus("Компьютер"), new Computer},{Rus("Моб.Телефон"), new MobilePhone}, {Rus("Телевизор"), new TV},
-                                                        {Rus("Тостер"), new Toaster}, {Rus("Кофемашина"), new CoffeMaker}, {Rus("Эл.Чайник"), new ElKettle},
-                                                        {Rus("Холодильник"), new Fridge}, {Rus("Кондиционер"), new Conditioner}, {Rus("Микроволновка"), new Microwawe}};
+                                                         {Rus("Тостер"), new Toaster}, {Rus("Кофемашина"), new CoffeMaker}, {Rus("Эл.Чайник"), new ElKettle},
+                                                         {Rus("Холодильник"), new Fridge}, {Rus("Кондиционер"), new Conditioner}, {Rus("Микроволновка"), new Microwawe}};
             char dbname[64], type[64];
             uint32_t index = -1;
             getWords(3, string, dbname, type);
@@ -161,11 +161,7 @@ void MyServer::handleRequest(QTcpSocket* clientSocket, qint16 choice, std::strin
                     std::string record_type = Rus(i -> getType().c_str());
                     if (i -> getID() == ID && record_type == type)
                     {
-                        if (!(i -> replaceObject(stringToReplace)))
-                        {
-                            sendToClient(clientSocket, SendingCodes::CHANGE_RECORD_FAIL, "");
-                            break;
-                        }
+                        i -> replaceObject(stringToReplace); break;
                     }
                 }
                 TECH_BASE -> getDB(index) -> rewriteDB();

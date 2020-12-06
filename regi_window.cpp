@@ -3,9 +3,8 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 
-#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
-
-RegiWindow::RegiWindow(QWidget *parent) : QWidget(parent) {
+RegiWindow::RegiWindow(QWidget *parent) : QWidget(parent)
+{
     QWidget::setFixedSize(QSize(480, 360));
     setWindowTitle("Регистрация");
 
@@ -83,7 +82,8 @@ void RegiWindow::Registration2_clicked()
     }
 }
 
-void RegiWindow::Clear_clicked() {
+void RegiWindow::Clear_clicked()
+{
     clearLines();
 }
 
@@ -92,36 +92,44 @@ void RegiWindow::Back_clicked()
     emit back_to_auth_clicked();
 }
 
-void RegiWindow::LoginLine_edited() {
+void RegiWindow::LoginLine_edited()
+{
     m_userLog = m_loginLine -> text();
 }
 
-void RegiWindow::PasswordLine_edited() {
+void RegiWindow::PasswordLine_edited()
+{
     m_userPass = m_passwordLine -> text();
 }
 
-void RegiWindow::ConfirmLine_edited() {
+void RegiWindow::ConfirmLine_edited()
+{
     m_confirmation = m_confirmLine -> text();
 }
 
-bool RegiWindow::checkPass() {
+bool RegiWindow::checkPass()
+{
     return (m_userPass == m_confirmation);
 }
 
-void RegiWindow::clearLines() {
+void RegiWindow::clearLines()
+{
     setError("Регистрация");
     m_loginLine -> clear();
     m_passwordLine -> clear();
     m_confirmLine -> clear();
 }
 
-void RegiWindow::setError(const QString& error_str) {
+void RegiWindow::setError(const QString& error_str)
+{
     m_generalLbl -> setText(error_str);
-    if (error_str != "Регистрация") {
+    if (error_str != "Регистрация")
+    {
         m_generalLbl -> setStyleSheet("color: red");
     }
 
-    if (error_str == "Регистрация") {
+    if (error_str == "Регистрация")
+    {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
     }
 }

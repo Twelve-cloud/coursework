@@ -19,25 +19,25 @@ VigenereCipher::VigenereCipher()
     }
 }
 
-void VigenereCipher::incrypt(const QString& keyword, QString& message)
+void VigenereCipher::incrypt(const std::string& keyword, std::string& message)
 {
     int key, source;
     for (uint32_t i = 0, j = 0; i < static_cast<uint32_t>(message.size()); i++, j++)
     {
         if (j == static_cast<uint32_t>(keyword.size())) j = 0;
 
-        if (keyword[j] <= '9') key = keyword[j].toLatin1() - 48;
-        else key = keyword[j].toLatin1() - 55;
+        if (keyword[j] <= '9') key = keyword[j] - 48;
+        else key = keyword[j] - 55;
 
-        if (message[i] <= '9') source = toupper(message[i].toLatin1()) - 48;
-        else source = toupper(message[i].toLatin1()) - 55;
+        if (message[i] <= '9') source = toupper(message[i]) - 48;
+        else source = toupper(message[i]) - 55;
 
         if (message[i] != ' ') message[i] = matrix[key][source];
         else j--;
     }
 }
 
-void VigenereCipher::decrypt(const QString& keyword, QString& message)
+void VigenereCipher::decrypt(const std::string& keyword, std::string& message)
 {
     int key;
     for (uint32_t i = 0, j = 0; i < static_cast<uint32_t>(message.size()); i++, j++)
@@ -45,13 +45,13 @@ void VigenereCipher::decrypt(const QString& keyword, QString& message)
         if (j == static_cast<uint32_t>(keyword.size())) j = 0;
 
         if (keyword[j] <= '9')
-            key = keyword[j].toLatin1() - 48;
+            key = keyword[j] - 48;
         else
-            key = keyword[j].toLatin1() - 55;
+            key = keyword[j] - 55;
 
         if (message[i] != ' ')
         {
-            message[i] = findLetter(key, message[i].toLatin1());
+            message[i] = findLetter(key, message[i]);
         }
         else
         {
@@ -59,7 +59,11 @@ void VigenereCipher::decrypt(const QString& keyword, QString& message)
             j--;
         }
     }
-    message = message.toLower();
+
+    for (uint32_t i = 0; i < message.size(); i++)
+    {
+        message[i] = tolower(message[i]);
+    }
 }
 
 char VigenereCipher::findLetter(uint32_t j, char sym)

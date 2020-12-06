@@ -1,12 +1,32 @@
 #include "streamtable.h"
 #include "constants.h"
+#include "sysfunction.h"
 #include <cstdint>
 #include <vector>
 #include <QString>
 #include <windows.h>
+#include <conio.h>
 
 extern StreamTable mt;
-#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
+
+void menu(void (*ptrMenu)(uint32_t), uint32_t RangeDown, uint32_t& count) // функция принмающая указатели на менюшки, делает эмуляцию перемещения стрелками для соответствующего меню
+{
+    uint32_t engine;
+    ptrMenu(count);
+    do
+    {
+        engine = getch();
+        if (engine == Output::PAGE_UP && count > Output::RANGE_UP)
+        {
+           count--;
+        }
+        if (engine == Output::PAGE_DOWN && count < RangeDown)
+        {
+            count++;
+        }
+        ptrMenu(count);
+    } while (engine != Output::ENTER);
+}
 
 void getServerMenu(uint32_t count)
 {

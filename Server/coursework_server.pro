@@ -45,6 +45,7 @@ HEADERS += \
         constants.h \
         dbnames_base.h \
         incryption.h \
+        menu.h \
         mythread.h \
         server.h \
         streamtable.h \

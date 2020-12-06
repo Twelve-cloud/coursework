@@ -7,11 +7,12 @@
 #include <QLabel>
 #include <QString>
 
-class CreateDB_Window : public QWidget
+class CreateDB_Window : public QWidget // Окно подключения и создания базы данных (просто меняю имя кнопки), поэтому для 2 действий одно окно
 {
     Q_OBJECT
 public:
     explicit CreateDB_Window(QWidget *parent = nullptr);
+
     void changeOkName(QString btnName);
     void clearLines();
     bool checkAction();

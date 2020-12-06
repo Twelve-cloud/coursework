@@ -46,11 +46,13 @@ void FindWidget::slot_cancel_clicked()
 void FindWidget::setError(const QString& error_str)
 {
     m_generalLbl -> setText(error_str);
-    if (error_str != "Найти запись") {
+    if (error_str != "Найти запись")
+    {
         m_generalLbl -> setStyleSheet("color: red");
     }
 
-    if (error_str == "Найти запись") {
+    if (error_str == "Найти запись")
+    {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
     }
 }

@@ -8,44 +8,43 @@
 
 extern StreamTable kt;
 
-bool comparePrice(Tech* obj1, Tech* obj2) // функция для сортировки
+bool comparePrice(Tech* obj1, Tech* obj2)
 {
     return obj1 -> getPrice() < obj2 -> getPrice();
 }
 
-bool compareID(Tech* obj1, Tech* obj2) // функция для сортировки
+bool compareID(Tech* obj1, Tech* obj2)
 {
     return obj1 -> getID() < obj2 -> getID();
 }
 
-bool compareDate(Tech* obj1, Tech* obj2) // функция для сортировки
+bool compareDate(Tech* obj1, Tech* obj2)
 {
     return obj1 -> getRecordTime() < obj2 -> getRecordTime();
 }
 
-bool compareSerial(Tech* obj1, Tech* obj2) // функция для сортировки
+bool compareSerial(Tech* obj1, Tech* obj2)
 {
     return obj1 -> getSerialNumber() < obj2 -> getSerialNumber();
 }
 
-bool compareManufacturer(Tech* obj1, Tech* obj2) // функция для сортировки
+bool compareManufacturer(Tech* obj1, Tech* obj2)
 {
     return obj1 -> getManufacturer() < obj2 -> getManufacturer();
 }
 
-void TechBase::addObject(Tech* object)
+void TechBase::addObject(Tech* object) // добавление, которое использует админ
 {
     std::cin >> *object;
     push_back(object);
     std::cout << Rus("Запись успешно добавлена.") << std::endl;
 }
 
-void TechBase::addObject(Tech* object, int)
+void TechBase::addObject(Tech* object, int) // добавление с клиента
 {
     object -> getRecordTime() = object -> setCurrentDate();
     object -> getRecordTime().erase(object -> getRecordTime().find(","), 1);
     push_back(object);
-    std::cout << Rus("Запись успешно добавлена.") << std::endl;
 }
 
 void TechBase::remObject(const uint32_t& ID)

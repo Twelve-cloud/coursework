@@ -14,7 +14,7 @@ public:
     void account_management_menu();
     void techbase_management_menu();
     void tech_management_menu(TechBase* DATABASE);
-    void run();
+    void run(); // переопределенная функция для запуска куска кода в отдельном потоке
 
 private:
     MyServer* m_tcpServer;

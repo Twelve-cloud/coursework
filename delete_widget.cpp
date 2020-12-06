@@ -46,11 +46,13 @@ void DeleteWidget::slot_cancel_clicked()
 void DeleteWidget::setError(const QString& error_str)
 {
     m_generalLbl -> setText(error_str);
-    if (error_str != "Удалить запись") {
+    if (error_str != "Удалить запись")
+    {
         m_generalLbl -> setStyleSheet("color: red");
     }
 
-    if (error_str == "Удалить запись") {
+    if (error_str == "Удалить запись")
+    {
         m_generalLbl -> setStyleSheet("color: rgb(200, 200, 200)");
     }
 }

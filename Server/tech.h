@@ -36,7 +36,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj);
     virtual void writeToFile(std::fstream& file);
     virtual void getStringToSend(std::string& stringToSend);
-    virtual bool replaceObject(std::string& string);
+    virtual void replaceObject(std::string& string);
 
     static std::string setCurrentDate();
 
@@ -83,7 +83,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     std::string m_processor = "-";
@@ -114,7 +114,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     std::string m_os = "-";
@@ -145,7 +145,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     std::string m_typescreen = "-";
@@ -173,7 +173,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     uint32_t m_toastcount = 1;
@@ -198,7 +198,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     uint32_t m_power = 1;
@@ -222,7 +222,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     uint32_t m_power = 1;
@@ -247,7 +247,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     uint32_t m_volume = 1;
@@ -273,7 +273,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     std::string m_workmode = "";
@@ -300,7 +300,7 @@ public:
     virtual void readFile(std::fstream& file, Tech* obj) override final;
     virtual void writeToFile(std::fstream& file) override final;
     virtual void getStringToSend(std::string& stringToSend) override final;
-    virtual bool replaceObject(std::string& string) override final;
+    virtual void replaceObject(std::string& string) override final;
 
 private:
     uint32_t m_power = 1;

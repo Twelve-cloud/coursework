@@ -7,7 +7,7 @@
 #include <QString>
 #include <QLineEdit>
 
-class ActionWindow : public QWidget
+class ActionWindow : public QWidget // Окно выбора действий
 {
     Q_OBJECT
 public:
@@ -17,7 +17,6 @@ signals:
     void add_record_clicked();
     void delete_record_clicked();
     void change_record_clicked();
-    void print_all_records_clicked();
     void find_record_clicked();
     void sort_records_clicked();
 

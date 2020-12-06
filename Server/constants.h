@@ -15,7 +15,7 @@ namespace SendingCodes
         CHANGE_RECORD,
         FIND_RECORD,
         SORT_RECORDS,
-    };
+    }; // Запросы от клиента
 
     enum ReturnCode
     {
@@ -39,7 +39,7 @@ namespace SendingCodes
         FIND_RECORD_FAIL,
         SORT_RECORDS_SUCCESS,
         SORT_RECORDS_FAIL
-    };
+    }; // Ответы клиенту
 
 }
 
@@ -84,7 +84,7 @@ namespace Output
         TECH_BASE_RANGE_DOWN = 7,
         TECH_RANGE_DOWN = 7,
     };
-}
+} // коды стрелок и etner  + нижний рендж для менюх
 
 namespace Error
 {

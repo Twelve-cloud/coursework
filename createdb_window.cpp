@@ -15,11 +15,14 @@ CreateDB_Window::CreateDB_Window(QWidget *parent) : QWidget(parent)
 
     m_dbSettingsLbl    = new QLabel("Настройки базы данных");
     m_dbSettingsLbl    -> setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
     m_dbNameLbl        = new QLabel("Имя базы данных: ");
-    m_dbPasswordLbl    = new QLabel("Пароль: ");
     m_dbNameLine       = new QLineEdit(this);
+
+    m_dbPasswordLbl    = new QLabel("Пароль: ");
     m_dbPassLine       = new QLineEdit(this);
     m_dbPassLine       -> setEchoMode(QLineEdit::Password);
+
     m_okBtn            = new QPushButton("&Создать | Подключиться");
 
     QHBoxLayout *gen_label = new QHBoxLayout;

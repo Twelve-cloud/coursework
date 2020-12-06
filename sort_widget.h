@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-class SortWidget : public QWidget
+class SortWidget : public QWidget // окно для выбора типа сортировки
 {
     Q_OBJECT
 public:

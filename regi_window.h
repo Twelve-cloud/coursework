@@ -7,7 +7,7 @@
 #include <QString>
 #include <QLineEdit>
 
-class RegiWindow : public QWidget
+class RegiWindow : public QWidget // окно регистрации
 {
     Q_OBJECT
 public:

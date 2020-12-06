@@ -8,8 +8,6 @@
 #include <ctime>
 
 extern StreamTable kt;
-std::string getWords(int count, std::string str, ...);
-#define NRus(str) QString::fromLocal8Bit(str).toUtf8().data()
 
 // Статические элементы класса
 
@@ -107,16 +105,12 @@ void Tech::getStringToSend(std::string& stringToSend)
     stringToSend = temp.str();
 }
 
-bool Tech::replaceObject(std::string& string)
+void Tech::replaceObject(std::string& string)
 {
     char serialnumber[64], manufacturer[64], releasedate[64], model[64], vendor[64], countrymaker[64], price[64];
     string = getWords(8, string, serialnumber, manufacturer, releasedate, model, vendor,countrymaker, price);
 
-    int32_t tmp = (atoi(price));
-    if (tmp < 0) tmp = 0;
-    m_price = tmp;
-
-    m_recordtime = setCurrentDate().c_str();
+    m_recordtime = setCurrentDate();
     m_recordtime.erase(m_recordtime.find(","), 1);
 
     m_serialnumber = serialnumber;
@@ -125,7 +119,7 @@ bool Tech::replaceObject(std::string& string)
     m_model = model;
     m_vendor = vendor;
     m_countrymaker = countrymaker;
-    return true;
+    m_price = checkNegative(price);
 }
 // !Виртуальные функции класса
 
@@ -214,31 +208,20 @@ void Computer::getStringToSend(std::string& stringToSend)
 
 }
 
-bool Computer::replaceObject(std::string& string)
+void Computer::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
+    Tech::replaceObject(string);
 
     char processor[64], core[64], ramtype[64], ramsize[64], screenresol[64], screendiag[64];
     string = getWords(7, string, processor, core, ramtype, ramsize, screenresol, screendiag);
 
-    int32_t tmp = (atoi(ramsize));
-    if (tmp < 0) tmp = 0;
-    m_ramsize = tmp;
-
-    tmp = (atoi(screendiag));
-    if (tmp < 0) tmp = 0;
-    m_screendiagonal = tmp;
-
-    tmp = (atoi(core));
-    if (tmp < 0) tmp = 0;
-    m_core = tmp;
 
     m_processor = processor;
     m_ramtype = ramtype;
     m_screenresol = screenresol;
-
-    return true;
+    m_ramsize = checkNegative(ramsize);
+    m_core = checkNegative(core);
+    m_screendiagonal = atof(screendiag);
 }
 
 std::istream& MobilePhone::setState(std::istream& in)
@@ -315,35 +298,20 @@ void MobilePhone::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
-bool MobilePhone::replaceObject(std::string& string)
+void MobilePhone::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
+    Tech::replaceObject(string);
 
     char os[64], screenresol[64], processor[64], core[64], ramsize[64], screendiag[64], simcount[64];
     string = getWords(8, string, os, screenresol, screendiag, processor, core, ramsize, simcount);
 
-    int32_t tmp = (atoi(ramsize));
-    if (tmp < 0) tmp = 0;
-    m_ramsize = tmp;
-
-    tmp = (atoi(screendiag));
-    if (tmp < 0) tmp = 0;
-    m_screendiagonal = tmp;
-
-    tmp = (atoi(core));
-    if (tmp < 0) tmp = 0;
-    m_core = tmp;
-
-    tmp = (atoi(simcount));
-    if (tmp < 0) tmp = 0;
-    m_simcount = tmp;
-
     m_os = os;
     m_processor = processor;
     m_screenresol = screenresol;
-
-    return true;
+    m_ramsize = checkNegative(ramsize);
+    m_core = checkNegative(core);
+    m_simcount = checkNegative(simcount);
+    m_screendiagonal = atof(screendiag);
 }
 
 std::istream& TV::setState(std::istream& in)
@@ -417,27 +385,19 @@ void TV::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
-bool TV::replaceObject(std::string& string)
+void TV::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
+    Tech::replaceObject(string);
 
-    char typescreen[64], screenresol[64], processor[64], core[64], _3Dmode[64];
-    getWords(6, string, typescreen, screenresol, processor, core, _3Dmode);
+    char typescreen[64], screenresol[64], screendiagonal[64], processor[64], core[64], _3Dmode[64];
+    getWords(7, string, typescreen, screenresol, screendiagonal, processor, core, _3Dmode);
 
     m_typescreen = typescreen;
     m_processor = processor;
     m_screenresolution = screenresol;
-
-    int32_t tmp = (atoi(core));
-    if (tmp < 0) tmp = 0;
-    m_core = tmp;
-
-    tmp = (atoi(_3Dmode));
-    if (tmp < 0) tmp = 0;
-    m_3Dmode = tmp;
-
-    return true;
+    m_core = checkNegative(core);
+    m_3Dmode = checkNegative(_3Dmode);
+    m_screendiagonal = atof(screendiagonal);
 }
 
 std::istream& Toaster::setState(std::istream& in)
@@ -495,31 +455,17 @@ void Toaster::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
-bool Toaster::replaceObject(std::string& string)
+void Toaster::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
+    Tech::replaceObject(string);
 
     char toastcount[64], power[64], defrosting[64], heating[64];
     getWords(5, string, toastcount, power, defrosting, heating);
 
-    int32_t tmp = (atoi(toastcount));
-    if (tmp < 0) tmp = 0;
-    m_toastcount = tmp;
-
-    tmp = (atoi(power));
-    if (tmp < 0) tmp = 0;
-    m_power = tmp;
-
-    tmp = (atoi(defrosting));
-    if (tmp < 0) tmp = 0;
-    m_defrostring = tmp;
-
-    tmp = (atoi(heating));
-    if (tmp < 0) tmp = 0;
-    m_heating = tmp;
-
-    return true;
+    m_toastcount = checkNegative(toastcount);
+    m_power = checkNegative(power);
+    m_defrostring = checkNegative(defrosting);
+    m_heating = checkNegative(heating);
 }
 
 std::istream& CoffeMaker::setState(std::istream& in)
@@ -571,22 +517,16 @@ void CoffeMaker::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
-bool CoffeMaker::replaceObject(std::string& string)
+void CoffeMaker::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
+    Tech::replaceObject(string);
 
     char power[64], pressure[64], cappuchinomaker[64];
     getWords(4, string, power, pressure, cappuchinomaker);
 
-    if (atoi(power) && atoi(pressure) == 0)
-        return false;
-
-    m_power = atoi(power);
-    m_pressure = atoi(pressure);
-    m_cappuccinomaker = atoi(cappuchinomaker);
-
-    return true;
+    m_power =  checkNegative(power);
+    m_pressure = checkNegative(pressure);
+    m_cappuccinomaker = checkNegative(cappuchinomaker);
 }
 
 std::istream& ElKettle::setState(std::istream& in)
@@ -638,22 +578,16 @@ void ElKettle::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
-bool ElKettle::replaceObject(std::string& string)
+void ElKettle::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
+    Tech::replaceObject(string);
 
     char power[64], volume[64], timer[64];
     getWords(4, string, power, volume, timer);
 
-    if (atoi(power) && atoi(volume) == 0)
-        return false;
-
-    m_power = atoi(power);
-    m_volume = atoi(volume);
-    m_timer = atoi(timer);
-
-    return true;
+    m_power = checkNegative(power);
+    m_volume = checkNegative(volume);
+    m_timer = checkNegative(timer);
 }
 
 std::istream& Fridge::setState(std::istream& in)
@@ -709,23 +643,17 @@ void Fridge::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
-bool Fridge::replaceObject(std::string& string)
+void Fridge::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
+    Tech::replaceObject(string);
 
     char volume[64], shelfcount[64], noiselvl[64], multizone[64];
     getWords(5, string, volume, shelfcount, noiselvl, multizone);
 
-    if (atoi(volume) && atoi(shelfcount) && atoi(noiselvl) == 0)
-        return false;
-
-    m_volume = atoi(volume);
-    m_shelfcount = atoi(shelfcount);
-    m_noiselvl = atoi(noiselvl);
-    m_multizone = atoi(multizone);
-
-    return true;
+    m_volume = checkNegative(volume);
+    m_shelfcount = checkNegative(shelfcount);
+    m_noiselvl = checkNegative(noiselvl);
+    m_multizone = checkNegative(multizone);
 }
 
 std::istream& Conditioner::setState(std::istream& in)
@@ -787,23 +715,16 @@ void Conditioner::getStringToSend(std::string& stringToSend)
 
 }
 
-bool Conditioner::replaceObject(std::string& string)
+void Conditioner::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
-
+    Tech::replaceObject(string);
     char workmode[64], coolingpower[64], heatingpower[64], remotecontol[64];
     getWords(5, string, workmode, coolingpower, heatingpower, remotecontol);
 
-    if (atoi(coolingpower) && atoi(heatingpower) == 0)
-        return false;
-
     m_workmode = workmode;
-    m_coolingpower = atoi(coolingpower);
-    m_heatingpower = atoi(heatingpower);
-    m_remotecontol = atoi(remotecontol);
-
-    return true;
+    m_coolingpower = checkNegative(coolingpower);
+    m_heatingpower = checkNegative(heatingpower);
+    m_remotecontol = checkNegative(remotecontol);
 }
 
 std::istream& Microwawe::setState(std::istream& in)
@@ -863,24 +784,18 @@ void Microwawe::getStringToSend(std::string& stringToSend)
     stringToSend += temp.str();
 }
 
-bool Microwawe::replaceObject(std::string& string)
+void Microwawe::replaceObject(std::string& string)
 {
-    if (Tech::replaceObject(string) == false)
-        return false;
+    Tech::replaceObject(string);
 
     char power[64], lvlpower_count[64], volume[64], quickstart[64], timer[64];
     getWords(6, string, power, lvlpower_count, volume, quickstart, timer);
 
-    if (atoi(power) && atoi(lvlpower_count) && atoi(volume) == 0)
-        return false;
-
-    m_power = atoi(power);
-    m_lvlpower_count = atoi(lvlpower_count);
-    m_volume = atoi(volume);
-    m_quickstart = atoi(quickstart);
-    m_timer = atoi(timer);
-
-    return true;
+    m_power = checkNegative(power);
+    m_lvlpower_count = checkNegative(lvlpower_count);
+    m_volume = checkNegative(volume);
+    m_quickstart = checkNegative(quickstart);
+    m_timer = checkNegative(timer);
 }
 
 // !Методы дочерних классов

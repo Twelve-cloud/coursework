@@ -1,40 +1,22 @@
 #include "mythread.h"
 #include "sysfunction.h"
 #include "constants.h"
+#include "menu.h"
 #include "streamtable.h"
 #include <iostream>
 #include <cstdint>
 #include <windows.h>
 #include <conio.h>
 
-void getServerMenu(std::uint32_t count);
-void getAccountMenu(std::uint32_t count);
-void getTechBaseMenu(uint32_t count);
-void getTechMenu(uint32_t count);
-void getTypeMenu(uint32_t count);
-
 void MyThread::run()
 {
-    std::uint32_t count = Output::RANGE_UP, engine;
+    std::uint32_t count = Output::RANGE_UP;
     bool isEnd;
 
     do
-    {
-        getServerMenu(count);
+    {    
         isEnd = false;
-        do
-        {
-            engine = getch();
-            if (engine == Output::PAGE_UP && count > Output::RANGE_UP)
-            {
-                count--;
-            }
-            if (engine == Output::PAGE_DOWN && count < Output::SERVER_RANGE_DOWN)
-            {
-                count++;
-            }
-            getServerMenu(count);
-        } while (engine != Output::ENTER);
+        menu(getServerMenu, Output::SERVER_RANGE_DOWN, count);
 
         switch (count)
         {
@@ -52,26 +34,13 @@ void MyThread::run()
 
 void MyThread::account_management_menu()
 {
-    int count = Output::RANGE_UP, engine;
+    uint32_t count = Output::RANGE_UP;
     bool isBack;
 
     do
     {
-        getAccountMenu(count);
         isBack = false;
-        do
-        {
-            engine = getch();
-            if (engine == Output::PAGE_UP && count > Output::RANGE_UP)
-            {
-                count--;
-            }
-            if (engine == Output::PAGE_DOWN && count < Output::ACCOUNT_RANGE_DOWN)
-            {
-                count++;
-            }
-            getAccountMenu(count);
-        } while (engine != Output::ENTER);
+        menu(getAccountMenu, Output::ACCOUNT_RANGE_DOWN, count);
 
         switch(count)
         {
@@ -156,26 +125,13 @@ void MyThread::account_management_menu()
 
 void MyThread::techbase_management_menu()
 {
-    int count = Output::RANGE_UP, engine;
+    uint32_t count = Output::RANGE_UP;
     bool isBack;
 
     do
     {
-        getTechBaseMenu(count);
         isBack = false;
-        do
-        {
-            engine = getch();
-            if (engine == Output::PAGE_UP && count > Output::RANGE_UP)
-            {
-                count--;
-            }
-            if (engine == Output::PAGE_DOWN && count < Output::TECH_BASE_RANGE_DOWN)
-            {
-                count++;
-            }
-            getTechBaseMenu(count);
-        } while (engine != Output::ENTER);
+        menu(getTechBaseMenu, Output::TECH_BASE_RANGE_DOWN, count);
 
         switch(count)
         {
@@ -260,54 +216,23 @@ void MyThread::techbase_management_menu()
     } while (!isBack);
 }
 
-void menu(void (*ptrMenu)(uint32_t), uint32_t RangeDown, int& count)
-{
-    int engine;
-    ptrMenu(count);
-    do
-    {
-        engine = getch();
-        if (engine == Output::PAGE_UP && count > Output::RANGE_UP)
-        {
-           count--;
-        }
-        if (engine == Output::PAGE_DOWN && count < RangeDown)
-        {
-            count++;
-        }
-        ptrMenu(count);
-    } while (engine != Output::ENTER);
-}
-
 void MyThread::tech_management_menu(TechBase* DATABASE)
 {
-    int count = Output::RANGE_UP, engine;
+    uint32_t count = Output::RANGE_UP;
     bool isBack;
     std::vector<Tech*> create_type = {new Computer, new MobilePhone, new TV, new Toaster, new CoffeMaker, new ElKettle, new Fridge, new Conditioner, new Microwawe};
 
+
     do
     {
-        getTechMenu(count);
         isBack = false;
-        do
-        {
-            engine = getch();
-            if (engine == Output::PAGE_UP && count > Output::RANGE_UP)
-            {
-                count--;
-            }
-            if (engine == Output::PAGE_DOWN && count < Output::TECH_RANGE_DOWN)
-            {
-                count++;
-            }
-            getTechMenu(count);
-        } while (engine != Output::ENTER);
+        menu(getTechMenu, Output::TECH_RANGE_DOWN, count);
 
         switch(count)
         {
             case 1:
             {
-                int countTypes = Output::RANGE_UP;
+                uint32_t countTypes = Output::RANGE_UP;
                 menu(getTypeMenu, Types::TYPE_RANGE_DOWN, countTypes);
                 DATABASE -> addObject(create_type[countTypes - 1] -> getTypeClass());
                 DATABASE -> rewriteDB();

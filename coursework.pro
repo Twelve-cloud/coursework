@@ -10,8 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = coursework
 TEMPLATE = app
-DESTDIR = D:\\Qt\\Projects\\coursework
-win32: RC_ICONS += D:\\Qt\\Projects\\coursework\\appicon\\Icon.ico
+win32: RC_ICONS += appicon\\Icon.ico
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -32,8 +31,6 @@ SOURCES += \
         createdb_window.cpp \
         delete_widget.cpp \
         find_widget.cpp \
-        greetingwindow.cpp \
-        incryption.cpp \
         main.cpp \
         mainwindow.cpp \
         regi_window.cpp \
@@ -48,8 +45,6 @@ HEADERS += \
         createdb_window.h \
         delete_widget.h \
         find_widget.h \
-        greetingwindow.h \
-        incryption.h \
         mainwindow.h \
         regi_window.h \
         sort_widget.h \

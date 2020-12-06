@@ -1,4 +1,5 @@
 #include "streamtable.h"
+#include "sysfunction.h"
 #include "dbnames_base.h"
 #include "tech.h"
 #include <iostream>
@@ -7,9 +8,8 @@
 #include <QString>
 
 extern StreamTable nt;
-#define Rus(str) QString::fromUtf8(str).toLocal8Bit().data()
 
-bool compare(const TechBase* obj1, const TechBase* obj2) // функция для сортировки
+bool compare(const TechBase* obj1, const TechBase* obj2)
 {
     return obj1 -> getFilename() < obj2 -> getFilename();
 }

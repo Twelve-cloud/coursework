@@ -8,7 +8,7 @@
 #include <QLineEdit>
 #include <QPalette>
 
-class TypeWindow : public QWidget
+class TypeWindow : public QWidget // окно типа техники
 {
     Q_OBJECT
 public:

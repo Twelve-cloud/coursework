@@ -9,8 +9,6 @@
 #include "delete_widget.h"
 #include "find_widget.h"
 #include "sort_widget.h"
-#include "greetingwindow.h"
-#include "incryption.h"
 #include "constants.h"
 #include <QTcpSocket>
 #include <QMdiArea>
@@ -22,7 +20,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     explicit MainWindow(const QString& hostname, int port, QWidget *parent = nullptr);
-    ~MainWindow();
+
     void SendToServer(qint16 choice, QString string);
     void handleResult(uint32_t compRecordsCount, qint16 result, QString string);
     void getColsTable(QString type);
@@ -76,12 +74,10 @@ private:
     QMdiSubWindow* subWindowDelete;
     QMdiSubWindow* subWindowFind;
     QMdiSubWindow* subWindowSort;
-    QMdiSubWindow* subWindowGreeting;
 
     DeleteWidget* m_deleteWidget;
     FindWidget* m_findWidget;
     SortWidget* m_sortWidget;
-    GreetingWindow* m_greetingWidget;
 
     QMenu* m_menu[MAX_MENUS];
     std::vector<bool> rowChanged;
@@ -89,7 +85,6 @@ private:
     AuthWindow m_auth;
     RegiWindow m_regi;
     CreateDB_Window m_dbWindow;
-    VigenereCipher m_msg;
     QTcpSocket* m_socket;
     quint16 m_nextBlockSize;
 };

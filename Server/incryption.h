@@ -7,12 +7,12 @@
 
 using std::uint32_t;
 
-class VigenereCipher
+class VigenereCipher //шифровка виженером для чисел и английских букв
 {
 public:
     VigenereCipher();
-    void incrypt(const QString& keyword, QString& message);
-    void decrypt(const QString& keyword, QString& message);
+    void incrypt(const std::string& keyword, std::string& message);
+    void decrypt(const std::string& keyword, std::string& message);
     char findLetter(uint32_t j, char sym);
 
 private:

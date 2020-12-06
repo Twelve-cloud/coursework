@@ -61,14 +61,9 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
     m_menu[WINDOW]  -> addAction(full_screen);
     m_menu[HELP]    -> addAction(about);
 
-    leftMenu = new QMdiArea(this);
 
-    m_greetingWidget = new GreetingWindow(leftMenu);
-    subWindowGreeting = leftMenu -> addSubWindow(m_greetingWidget);
-    subWindowGreeting -> setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
-    subWindowGreeting -> move(0, 0);
-    subWindowGreeting -> setFixedSize(QGuiApplication::screens().at(0)->geometry().width(), QGuiApplication::screens().at(0)->geometry().height());
-    subWindowGreeting -> show();
+////////////////Работа с дочерними окнами//////////////////////////////
+    leftMenu = new QMdiArea(this);
 
     m_types = new TypeWindow(leftMenu);
     subWindowTypes = leftMenu -> addSubWindow(m_types);
@@ -118,6 +113,8 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
 
     setCentralWidget(leftMenu);
 
+////////////////!Работа с дочерними окнами//////////////////////////////
+
     connect(m_table, SIGNAL(cellChanged(int, int)), this, SLOT(slot_cellChanged(int, int)));
     connect(m_sortWidget, SIGNAL(sort_type_clicked()), this, SLOT(slot_sortTypeClicked()));
     connect(m_sortWidget, SIGNAL(sort_cancel_clicked()), this, SLOT(slot_sortCancelClicked()));
@@ -138,39 +135,51 @@ MainWindow::MainWindow(const QString& hostname, int port, QWidget *parent) : QMa
     connect(full_screen, SIGNAL(triggered()), this, SLOT(slotFullScreen()));
 }
 
-MainWindow::~MainWindow() {}
-
-void MainWindow::slotFullScreen() {
-    if (full_screen -> isChecked()) {
+void MainWindow::slotFullScreen()
+{
+    if (full_screen -> isChecked())
+    {
         QMainWindow::showFullScreen();
-    } else {
+    }
+    else
+    {
         setWindowState(Qt::WindowMaximized);
     }
 }
 
-void MainWindow::display() {
+void MainWindow::display()
+{
     m_auth.show();
 }
 
-void MainWindow::registerWindowShow() {
+void MainWindow::registerWindowShow()
+{
     m_regi.clearLines();
     m_regi.setError("Регистрация");
     m_auth.hide();
     m_regi.show();
 }
 
-void MainWindow::Authorization() {
-    if (!m_auth.isEmptyLine()) {
+void MainWindow::Authorization()
+{
+    if (!m_auth.isEmptyLine())
+    {
         SendToServer(SendingCodes::AUTHENTIFICATION, m_auth.getLogin() + " " + m_auth.getPassword());
-    } else {
+    }
+    else
+    {
         m_auth.setError("Заполните все поля");
     }
 }
 
-void MainWindow::Registration() {
-    if (m_regi.checkPass()) {
+void MainWindow::Registration()
+{
+    if (m_regi.checkPass())
+    {
         SendToServer(SendingCodes::REGISTRATION, m_regi.getLogin() + " " + m_regi.getPassword());
-    } else {
+    }
+    else
+    {
         m_regi.setError("Неверный пароль");
     }
 }
@@ -511,7 +520,6 @@ void MainWindow::handleResult(uint32_t compRecordsCount, qint16 result, QString 
         {
             m_dbWindow.clearLines();
             m_dbWindow.hide();
-            subWindowGreeting -> hide();
             subWindowTypes -> show();
             break;
         }

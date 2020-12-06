@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     QString filename = ":/style.css";
-    if (!QFile::exists(filename)) {
+    if (!QFile::exists(filename))
+    {
         qFatal("Can't loading styles.");
     }
     QFile style(filename);
